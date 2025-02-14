@@ -9,7 +9,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="pt-8">
+    <div className="pt-2">
       <Game userId={user?.id} walletAddress={user.primaryWeb3Wallet?.web3Wallet || ""} />
     </div>
   );

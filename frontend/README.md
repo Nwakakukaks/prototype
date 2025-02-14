@@ -1,3 +1,3 @@
-## Industry.ai
+## RequestForStartup (RFS)
 
-Hackathon project for the 2024 Eth Global Hackathon Bangkok.
+Hackathon project for the Sonic DeFAI Hackathon.
