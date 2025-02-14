@@ -13,6 +13,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { inter } from "./fonts";
 import "./globals.css";
+import '@rainbow-me/rainbowkit/styles.css'
 
 export const metadata: Metadata = {
   title: "RequestForStartup - Sonic DEFAI Project",
