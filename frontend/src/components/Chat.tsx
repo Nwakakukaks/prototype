@@ -5,7 +5,6 @@ import { Name } from "@coinbase/onchainkit/identity";
 import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { base } from "wagmi/chains";
-import { CustomConnectButton } from "./ConnectButton";
 
 interface ChatMessage {
   id: string;
@@ -75,10 +74,8 @@ const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
         >
           <div className="flex-1 flex items-center justify-between">
             <h2 className="font-semibold tracking-tight text-2xl text-blue-900 flex items-center gap-2">
-              Chat History
+              Chat
             </h2>
-
-           <CustomConnectButton/>
           </div>
         </div>
         <div

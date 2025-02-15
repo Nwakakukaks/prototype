@@ -995,15 +995,15 @@ const Game = ({ userId, walletAddress }: { userId: string, walletAddress: string
 
     // Return statement with conditional rendering
     return (
-        <div className="relative flex flex-col md:flex-row gap-4 h-[calc(100vh-5rem)] max-h-[calc(100vh-7rem)]">
+        <div className="relative flex flex-col md:flex-row gap-4 px-24 h-[calc(100vh-5rem)] max-h-[calc(100vh-7rem)]">
             {/* Render CharacterSelect when isOpen is true */}
             {isOpen && <CharacterSelect />}
 
             {/* Left Column - RecursiveChat and Chat */}
-            <div className="hidden md:flex md:flex-col w-80 h-full gap-4">
-                <div className="h-auto">
+            <div className="hidden md:flex md:flex-col w-1/3 h-full gap-4">
+                {/* <div className="h-auto">
                     <RecursiveChat chatMode={chatMode} setChatMode={setChatMode} />
-                </div>
+                </div> */}
                 <div className="flex-1 overflow-hidden rounded-lg">
                     <Chat
                         messages={chatMessages}
@@ -1051,19 +1051,7 @@ const Game = ({ userId, walletAddress }: { userId: string, walletAddress: string
                 )}
             </div>
 
-            {/* Right Column - Agent Details and Notifications */}
-            <div className="hidden md:block w-80 h-full space-y-4">
-                <div className="h-[28%] overflow-hidden rounded-lg">
-                    <AgentDetails
-                        ens="agent.eth"
-                        chain="Ethereum"
-                        resources={["100 USDC", "2 NFTs", "1 Badge"]}
-                    />
-                </div>
-                <div className="h-[70%] overflow-hidden rounded-lg">
-                    <NotificationBoard notifications={notifications} />
-                </div>
-            </div>
+
 
             {/* Mobile Chat and Notifications */}
             <div className="md:hidden fixed bottom-4 left-4 right-4 flex gap-2">

@@ -18,7 +18,7 @@ import {
 
 export default function RecursiveChat({ chatMode, setChatMode }: { chatMode: 'STANDARD' | 'RECURSIVE', setChatMode: (mode: 'STANDARD' | 'RECURSIVE') => void }) {
     return (
-        <Card className="w-full">
+        <Card className="w-full bg-card/80">
             <CardHeader>
                 <CardTitle>Chat Mode</CardTitle>
                 <CardDescription>
