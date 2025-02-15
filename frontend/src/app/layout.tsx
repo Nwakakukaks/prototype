@@ -14,6 +14,7 @@ import Image from "next/image";
 import { inter } from "./fonts";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import { NavBar } from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "RequestForStartup - Sonic DEFAI Project",
@@ -48,6 +49,7 @@ export default function RootLayout({
             <Providers>
               <CharacterSelectProvider>
                 <CharacterSelect />
+                <NavBar/>
                 {children}
               </CharacterSelectProvider>
             </Providers>

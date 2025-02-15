@@ -2,10 +2,10 @@
 
 import { pixelify_sans } from "@/app/fonts";
 import { Name } from "@coinbase/onchainkit/identity";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { base } from "wagmi/chains";
+import { CustomConnectButton } from "./ConnectButton";
 
 interface ChatMessage {
   id: string;
@@ -78,17 +78,7 @@ const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
               Chat History
             </h2>
 
-            <ConnectButton
-              label="Connect"
-              showBalance={{
-                smallScreen: false,
-                largeScreen: true,
-              }}
-              accountStatus={{
-                smallScreen: "avatar",
-                largeScreen: "full",
-              }}
-            />
+           <CustomConnectButton/>
           </div>
         </div>
         <div

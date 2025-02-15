@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import React from "react";
 import { Star, Users, ExternalLink, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CustomConnectButton } from "@/components/ConnectButton";
 
 interface Startup {
   name: string;
@@ -27,7 +28,7 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
         className="w-12 h-12 rounded-full object-contain"
       />
       <div className="flex gap-2">
-        <a href="#" className="text-gray-800 hover:text-orange-500">
+        <a href="/pad19" className="text-gray-800 hover:text-orange-500">
           <ExternalLink size={20} />
         </a>
       </div>
@@ -133,22 +134,8 @@ const LandingPage: React.FC = () => {
 
       {/* Main Content with higher z-index */}
       <div className="relative z-10">
-        {/* Navbar */}
-        <nav className="shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16 items-center">
-              <div className="text-2xl font-bold text-orange-500">
-                Sonic RFS
-              </div>
-              <Button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
-                Connect Wallet
-              </Button>
-            </div>
-          </div>
-        </nav>
-
         {/* Hero Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-50 mb-3">
             Request a Startup on Sonic Ecosystem,
           </h1>
