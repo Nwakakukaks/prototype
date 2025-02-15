@@ -16,7 +16,7 @@ export default clerkMiddleware(async (auth, req) => {
 
     // If user is authenticated and trying to access auth pages, redirect to root
     if (userId && isPublicRoute(req)) {
-        const homeUrl = new URL('/', req.url)
+        const homeUrl = new URL('/landing', req.url)
         return Response.redirect(homeUrl)
     }
 })
