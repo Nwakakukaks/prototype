@@ -42,14 +42,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" >
+    <html lang="en">
       <body className={`${inter.className} `}>
         <ClerkProvider>
           <div className="mx-auto max-w-[1280px]">
             <Providers>
               <CharacterSelectProvider>
                 <CharacterSelect />
-                <NavBar/>
+                <div className="text-sm p-1 text-center bg-orange-50 text-gray-900">
+                  We're lauching soon on product hunt. Please support by leaving
+                  us an upvote 🙏
+                </div>
+                <NavBar />
                 {children}
               </CharacterSelectProvider>
             </Providers>
