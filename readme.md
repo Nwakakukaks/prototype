@@ -1,4 +1,4 @@
-# VersionOne: The Future of Building on Sonic
+# VersionOne: How Smart Builders Build on Sonic
 
 ## Current Development Challenges
 
