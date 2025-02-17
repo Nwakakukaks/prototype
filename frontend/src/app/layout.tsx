@@ -53,7 +53,7 @@ export default function RootLayout({
                   We're lauching soon on product hunt. Please support by leaving
                   us an upvote 🙏
                 </div>
-                <NavBar />
+               
                 {children}
               </CharacterSelectProvider>
             </Providers>

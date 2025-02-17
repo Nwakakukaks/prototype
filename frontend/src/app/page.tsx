@@ -4,6 +4,7 @@ import React from "react";
 import { Star, Users, ExternalLink, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomConnectButton } from "@/components/ConnectButton";
+import { NavBar } from "@/components/navbar";
 
 interface Startup {
   name: string;
@@ -133,6 +134,8 @@ const LandingPage: React.FC = () => {
       </div>
 
       {/* Main Content with higher z-index */}
+      {/* nav */}
+      <NavBar />
       <div className="relative z-10">
         {/* Hero Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
