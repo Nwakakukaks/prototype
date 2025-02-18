@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { TwitterApi } from 'twitter-api-v2';
-import { TweetAnalysis } from '../../../../test-scripts/get-tweets';
 import { logConsole } from '../../../utils';
 
 const twitterClient = new TwitterApi({
@@ -31,7 +30,7 @@ async function getUsersByUsernames(usernames: string[]): Promise<TwitterUser[]> 
     }
 }
 
-async function fetchLatestTweet(userId: string): Promise<TweetAnalysis | null> {
+async function fetchLatestTweet(userId: string): Promise<any | null> {
     try {
         const tweets = await twitterClient.v2.userTimeline(userId, {
             "tweet.fields": ["created_at", "public_metrics", "entities"],
@@ -77,7 +76,7 @@ export async function getTweets(specificXHandle: string) {
         }
 
 
-        const tweets: TweetAnalysis[] = [];
+        const tweets = [];
 
         for (const user of users) {
             const tweet = await fetchLatestTweet(user.id);

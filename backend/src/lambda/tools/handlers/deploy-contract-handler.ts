@@ -16,7 +16,7 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient, {
 
 export async function deployContract({ sessionId, createdBy, characterId, tokenName, tokenSymbol, totalSupply, network }: { sessionId: string, createdBy: string, characterId: string, tokenName: string, tokenSymbol: string, totalSupply: string, network: string }) {
     const wallet = await getWallet(createdBy, characterId);
-    const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL);
+    const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
     const signer = new ethers.Wallet(wallet.privateKey, provider);
 
     logConsole.info(`Wallet Address: ${signer.address}`)
@@ -35,7 +35,7 @@ export async function deployContract({ sessionId, createdBy, characterId, tokenN
     // Ensure totalSupply is a bigint
     try {
         logConsole.info(`Calling deployToken for ${tokenName} - ${tokenSymbol} - ${totalSupply}`)
-        const provider = new ethers.JsonRpcProvider(network === "base" ? process.env.BASE_RPC_URL : process.env.SCROLL_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(network === "sonic" ? process.env.SONIC_RPC_URL : network === "electroeum" ? process.env.ELECTROEUM_RPC_URL : process.env.POLYGON_RPC_URL);
         const signer = new ethers.Wallet(wallet.privateKey, provider);
 
         // Check signer eth balance
@@ -73,8 +73,8 @@ export async function deployContract({ sessionId, createdBy, characterId, tokenN
 
         logConsole.info(`Waiting for deployedContract to be confirmed`)
 
-        if (network === "base") {
-            await sendCharacterMessage(characterId, sessionId, docClient, `Cool, i've deployed it now just verifying it on Basescan.`)
+        if (network === "sonic") {
+            await sendCharacterMessage(characterId, sessionId, docClient, `Cool, i've deployed it now just verifying it on Sonicscan.`)
             await verifyERC20Contract(deployedContractAddress, process.env.CHAIN_ID as string, [tokenName, tokenSymbol, totalSupply], characterId, sessionId);
         }
 
@@ -124,7 +124,7 @@ const verifyERC20Contract = async (
     try {
         logConsole.info('Starting contract verification process');
         const apiEndpoint =
-            network === "84532" ? "https://api-sepolia.basescan.org/api" : "https://api.basescan.org/api";
+            network === "57054" ? "https://api-testnet.sonicscan.org/api" : "https://api.sonicscan.org/api";
         logConsole.info(`Using API endpoint: ${apiEndpoint}`);
 
         // Parse the totalSupply (last argument) as ethers.parseUnits
@@ -145,7 +145,7 @@ const verifyERC20Contract = async (
         ).slice(2); // Remove '0x' prefix
 
         const verificationBody = {
-            apikey: process.env.BASESCAN_API_KEY as string,
+            apikey: process.env.SONICSCAN_API_KEY as string,
             module: "contract",
             action: "verifysourcecode",
             contractaddress: contractAddress,
@@ -161,7 +161,7 @@ const verifyERC20Contract = async (
 
         logConsole.info('Prepared verification request body');
 
-        logConsole.info('Sending verification request to Basescan');
+        logConsole.info('Sending verification request to Sonicscan');
         const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
@@ -183,7 +183,7 @@ const verifyERC20Contract = async (
 
                 logConsole.info('Checking verification status');
                 const checkResponse = await fetch(
-                    `${apiEndpoint}?apikey=${process.env.BASESCAN_API_KEY as string}&module=contract&action=checkverifystatus&guid=${guid}`
+                    `${apiEndpoint}?apikey=${process.env.SONICSCAN_API_KEY as string}&module=contract&action=checkverifystatus&guid=${guid}`
                 );
                 verificationStatus = await checkResponse.json();
                 logConsole.info(`Verification status check`);
@@ -192,7 +192,7 @@ const verifyERC20Contract = async (
 
             logConsole.info('Verification process completed');
 
-            await sendCharacterMessage(characterId, sessionId, docClient, `The contract has been verified on Basescan.`);
+            await sendCharacterMessage(characterId, sessionId, docClient, `The contract has been verified on Sonicscan.`);
             return {
                 success: verificationStatus.status === "1",
                 message: verificationStatus.result

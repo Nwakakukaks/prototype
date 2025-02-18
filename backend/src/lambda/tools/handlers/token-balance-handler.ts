@@ -39,7 +39,7 @@ export async function getTokenBalance(inputData: TokenBalanceInput) {
 
         // Get wallet and connect to provider
         const wallet = await getWallet(inputData.createdBy, inputData.characterId);
-        const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
         const signer = new ethers.Wallet(wallet.privateKey, provider);
 
         logConsole.info('Connected to provider with address:', signer.address);

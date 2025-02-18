@@ -24,7 +24,7 @@ export async function createNFT({ createdBy, sessionId, characterId, NFTName, de
     logConsole.info('Retrieved wallet details', { address: wallet.walletAddress });
 
     // Connect to Provider
-    const rpcUrl = process.env.BASE_RPC_URL;
+    const rpcUrl = process.env.SONIC_RPC_URL;
     logConsole.info("Connecting to RPC provider", { rpcUrl });
     const account = privateKeyToAccount(wallet.privateKey as `0x${string}`);
     logConsole.info('Created account from private key', { accountAddress: account.address });

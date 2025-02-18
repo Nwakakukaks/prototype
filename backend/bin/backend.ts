@@ -2,11 +2,14 @@
 import * as cdk from 'aws-cdk-lib';
 import 'dotenv/config';
 import 'source-map-support/register';
-import { EthGlobalBangkok2024Stack } from '../lib/eth-global-bangkok-2024-stack';
+import { SonicStack } from '../lib/backend-stack';
+
+const account = process.env.AWS_ACCOUNT
 
 const app = new cdk.App();
-new EthGlobalBangkok2024Stack(app, 'EthGlobalBangkok2024Stack', {
+new SonicStack(app, 'SonicStack', {
   env: {
-    region: 'us-east-1',
+    account: account,
+    region: 'sa-east-1',
   }
 });

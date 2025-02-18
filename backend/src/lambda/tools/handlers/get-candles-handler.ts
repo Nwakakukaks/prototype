@@ -64,7 +64,7 @@ export async function getUniswapPriceData(
     dataPoints: number = 12  // Number of data points to return
 ): Promise<TokenPriceInfo | null> {
     try {
-        const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
         const pairContract = new ethers.Contract(pairAddress, UNISWAP_V2_PAIR_ABI, provider);
 
         // Get token addresses
@@ -223,7 +223,7 @@ async function getEthPrice(): Promise<number> {
     const USDC_WETH_PAIR = '0x88A43bbDF9D098eEC7bCEda4e2494615dfD9bB9C';
 
     try {
-        const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
         const pairContract = new ethers.Contract(USDC_WETH_PAIR, UNISWAP_V2_PAIR_ABI, provider);
 
         // Get current reserves

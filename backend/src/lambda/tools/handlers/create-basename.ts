@@ -156,7 +156,7 @@ export async function manageBasename({
 
         const registerArgs = createRegisterContractMethodArgs(newBasename, wallet.walletAddress);
 
-        const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
         const contract = new ethers.Contract(
             BaseNamesRegistrarControllerAddress,
             registrarABI,

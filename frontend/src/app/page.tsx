@@ -200,14 +200,14 @@ const LandingPage: React.FC = () => {
               >
                 Brand Kit
               </a>
-              <a
+              {/* <a
                 href="https://example.com/media"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline mt-2 font-medium mt-[6px]"
               >
                 Media
-              </a>
+              </a> */}
             </div>
           </div>
         </div>

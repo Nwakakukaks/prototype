@@ -10,7 +10,7 @@ const CORE_TABLE_NAME = process.env.CORE_TABLE_NAME as string;
 const WETH_ADDRESS = process.env.WETH_ADDRESS as string;
 const UNISWAP_V2_ROUTER_ADDRESS = process.env.UNISWAP_V2_ROUTER_ADDRESS as string;
 const UNISWAP_V2_FACTORY_ADDRESS = process.env.UNISWAP_V2_FACTORY_ADDRESS as string;
-const BASE_RPC_URL = process.env.BASE_RPC_URL as string;
+const SONIC_RPC_URL = process.env.SONIC_RPC_URL as string;
 
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient, {
@@ -85,8 +85,8 @@ export async function createUniswapPool({
         logConsole.info('Retrieved wallet:', JSON.stringify(wallet));
 
         // Connect to Provider
-        logConsole.info("Connecting to RPC provider with URL: ", BASE_RPC_URL);
-        const provider = new ethers.JsonRpcProvider(BASE_RPC_URL);
+        logConsole.info("Connecting to RPC provider with URL: ", SONIC_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(SONIC_RPC_URL);
         const signer = new ethers.Wallet(wallet.privateKey, provider);
         logConsole.info('Connected to provider and created signer with address:', signer.address);
         logConsole.info('Using Uniswap V2 Router address:', UNISWAP_V2_ROUTER_ADDRESS);

@@ -13,18 +13,18 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import 'dotenv/config';
 
-export class EthGlobalBangkok2024Stack extends cdk.Stack {
+export class SonicStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Log all environment variables to help debug which ones are missing
     console.log('Environment variables:');
     console.log('CHAIN_ID:', process.env.CHAIN_ID);
-    console.log('BASE_RPC_URL:', process.env.BASE_RPC_URL);
+    console.log('SONIC_RPC_URL:', process.env.SONIC_RPC_URL);
     console.log('UNISWAP_V2_ROUTER_ADDRESS:', process.env.UNISWAP_V2_ROUTER_ADDRESS);
     console.log('DOMAIN_NAME:', process.env.DOMAIN_NAME);
     console.log('STAGE:', process.env.STAGE);
-    console.log('BASESCAN_API_KEY:', process.env.BASESCAN_API_KEY);
+    console.log('SONICSCAN_API_KEY:', process.env.SONICSCAN_API_KEY);
     console.log('WETH_ADDRESS:', process.env.WETH_ADDRESS);
     console.log('USDC_ADDRESS:', process.env.USDC_ADDRESS);
     console.log('TWITTER_APP_KEY:', process.env.TWITTER_APP_KEY);
@@ -38,11 +38,10 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
 
     const requiredEnvVars = [
       'CHAIN_ID',
-      'BASE_RPC_URL',
+      'SONIC_RPC_URL',
       'UNISWAP_V2_ROUTER_ADDRESS',
-      'DOMAIN_NAME',
       'STAGE',
-      'BASESCAN_API_KEY',
+      'SONICSCAN_API_KEY',
       'WETH_ADDRESS',
       'USDC_ADDRESS',
       'TWITTER_APP_KEY',
@@ -54,6 +53,8 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       'READ_TWITTER_ACCESS_ACCESS_TOKEN',
       'READ_TWITTER_ACCESS_ACCESS_SECRET'
     ];
+
+    // 'DOMAIN_NAME',
 
     const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
     if (missingVars.length > 0) {
@@ -85,9 +86,9 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       billingMode: BillingMode.PAY_PER_REQUEST,
     });
 
-    const httpApi = new cdk.aws_apigatewayv2.HttpApi(this, "Bangkok2024Api", {
-      apiName: "Bangkok2024Api",
-      description: "API for Bangkok 2024",
+    const httpApi = new cdk.aws_apigatewayv2.HttpApi(this, "vOneApi", {
+      apiName: "vOneApi",
+      description: "API for Sonic hackathon",
       corsPreflight: {
         allowCredentials: false,
         allowHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
@@ -104,17 +105,18 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       disableExecuteApiEndpoint: false,
     })
 
-    const issuer = "https://relevant-bird-25.clerk.accounts.dev"
+    const issuer = "https://innocent-mammoth-97.clerk.accounts.dev" //changed
+    // const issuer = "https://relevant-bird-25.clerk.accounts.dev"
     const audience = ["aws"]
     const httpApiAuthorizer = new HttpJwtAuthorizer('prodHttpApiAuthorizer', issuer, {
       jwtAudience: audience,
       identitySource: ['$request.header.Authorization'],
     })
 
-    const chatQueueDLQ = new cdk.aws_sqs.Queue(this, 'Bangkok2024ChatQueueDLQ', {
+    const chatQueueDLQ = new cdk.aws_sqs.Queue(this, 'vOneChatQueueDLQ', {
       visibilityTimeout: Duration.seconds(300),
     });
-    const chatQueue = new cdk.aws_sqs.Queue(this, 'Bangkok2024ChatQueue', {
+    const chatQueue = new cdk.aws_sqs.Queue(this, 'vOneChatQueue', {
       visibilityTimeout: Duration.seconds(300),
       deadLetterQueue: {
         queue: chatQueueDLQ,
@@ -122,10 +124,10 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       }
     });
 
-    const s3Bucket = new Bucket(this, 'Bangkok2024S3Bucket');
+    const s3Bucket = new Bucket(this, 'vOneS3Bucket');
 
     // Websockets
-    const websocketTable = new Table(this, 'Bangkok2024WebSocketConnections', {
+    const websocketTable = new Table(this, 'vOneWebSocketConnections', {
       partitionKey: { name: "PK", type: AttributeType.STRING },
       sortKey: { name: "SK", type: AttributeType.STRING },
       timeToLiveAttribute: 'ttl',
@@ -137,8 +139,8 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       WSS_TABLE_NAME: websocketTable.tableName,
 
       // RPC 
-      BASE_RPC_URL: process.env.BASE_RPC_URL as string,
-      SCROLL_RPC_URL: process.env.SCROLL_RPC_URL as string,
+      SONIC_RPC_URL: process.env.SONIC_RPC_URL as string,
+      ELECTROEUM_RPC_URL: process.env.ELECTROEUM_RPC_URL as string,
       POLYGON_RPC_URL: process.env.POLYGON_RPC_URL as string,
 
       // API Gateway
@@ -154,8 +156,8 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       READ_TWITTER_ACCESS_ACCESS_TOKEN: process.env.READ_TWITTER_ACCESS_ACCESS_TOKEN as string,
       READ_TWITTER_ACCESS_ACCESS_SECRET: process.env.READ_TWITTER_ACCESS_ACCESS_SECRET as string,
 
-      // BaseScan
-      BASESCAN_API_KEY: process.env.BASESCAN_API_KEY as string,
+      // SonicScan
+      SONICSCAN_API_KEY: process.env.SONICSCAN_API_KEY as string,
 
       // Pinata
       PINATA_API_KEY: process.env.PINATA_API_KEY as string,
@@ -200,13 +202,13 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
     // Agent Route
     httpApi.addRoutes({
       path: "/v1/callAgent",
-      integration: new HttpLambdaIntegration('Bangkok2024ApiApiIntegration', apiHandler),
+      integration: new HttpLambdaIntegration('vOneApiApiIntegration', apiHandler),
       methods: [apigatewayv2.HttpMethod.GET],
       authorizer: httpApiAuthorizer
     });
 
     // Socket Queue connector
-    const chatQueueHandler = new NodejsFunction(this, 'Bangkok2024ChatProcessor', {
+    const chatQueueHandler = new NodejsFunction(this, 'vOneChatProcessor', {
       runtime: Runtime.NODEJS_20_X,
       memorySize: 512,
       timeout: Duration.seconds(30),
@@ -218,7 +220,7 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
     websocketTable.grantReadWriteData(chatQueueHandler)
 
     // The core business logic layer that handles agent integration
-    const websocketChatProcessorHandler = new NodejsFunction(this, 'Bangkok2024WebsocketChatProcessorHandler', {
+    const websocketChatProcessorHandler = new NodejsFunction(this, 'vOneWebsocketChatProcessorHandler', {
       runtime: Runtime.NODEJS_20_X,
       environment: environmentVariables,
       timeout: Duration.minutes(5),
@@ -231,8 +233,8 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
     chatQueue.grantConsumeMessages(websocketChatProcessorHandler)
     websocketChatProcessorHandler.addEventSource(new cdk.aws_lambda_event_sources.SqsEventSource(chatQueue));
 
-    const websocketIntegration = new WebSocketLambdaIntegration('Bangkok2024ChatIntegration', chatQueueHandler);
-    const websocketApi = new aws_apigatewayv2.WebSocketApi(this, 'Bangkok2024ChatWebSocketApi', {
+    const websocketIntegration = new WebSocketLambdaIntegration('vOneChatIntegration', chatQueueHandler);
+    const websocketApi = new aws_apigatewayv2.WebSocketApi(this, 'vOneChatWebSocketApi', {
       apiName: 'ChatWebSocketApi',
       routeSelectionExpression: '$request.body.action',
       description: 'WebSocket API for real-time chat of agents',
@@ -244,7 +246,7 @@ export class EthGlobalBangkok2024Stack extends cdk.Stack {
       },
     });
 
-    const websocketStage = new WebSocketStage(this, `Bangkok2024Stage`, {
+    const websocketStage = new WebSocketStage(this, `vOneStage`, {
       webSocketApi: websocketApi,
       stageName: "prod",
       autoDeploy: true,

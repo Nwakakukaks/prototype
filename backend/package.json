@@ -1,8 +1,8 @@
 {
-  "name": "eth-global-bangkok-2024",
+  "name": "backend",
   "version": "0.1.0",
   "bin": {
-    "eth-global-bangkok-2024": "bin/eth-global-bangkok-2024.js"
+    "backend": "bin/backend.ts"
   },
   "scripts": {
     "build": "tsc",
