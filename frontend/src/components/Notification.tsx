@@ -6,7 +6,7 @@ import { base } from 'wagmi/chains';
 interface NotificationProps {
     message: string;
     timestamp: Date;
-    characterName: string;
+    characterName: string; 
     eventName?: string;
     metadata?: Record<string, string>;
 }

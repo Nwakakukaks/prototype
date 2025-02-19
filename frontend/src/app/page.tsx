@@ -1,3 +1,5 @@
+'use client'
+
 export const dynamic = "force-dynamic";
 
 import React from "react";
@@ -5,6 +7,7 @@ import { Star, Users, ExternalLink, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { NavBar } from "@/components/navbar";
+import { useRouter } from "next/navigation";
 
 interface Startup {
   name: string;
@@ -64,6 +67,12 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
 );
 
 const LandingPage: React.FC = () => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push('/home'); 
+  };
+
   const recentStartups: Startup[] = [
     {
       name: "DeFi Pulse",
@@ -152,6 +161,7 @@ const LandingPage: React.FC = () => {
             />
             <Button
               size={"lg"}
+              onClick={handleClick}
               className="rounded-full py-6 px-10 text-lg font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors"
             >
               Get Started
@@ -183,7 +193,7 @@ const LandingPage: React.FC = () => {
               </span>{" "}
               by VersionOne team
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <a
                 href="https://example.com/brand-kit"
                 target="_blank"

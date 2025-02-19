@@ -58,7 +58,7 @@ export function CustomConnectButton() {
 
               return (
                 <div className="flex items-center gap-3">
-                  <Button
+                  {/* <Button
                     onClick={openChainModal}
                     className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white font-medium py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
                   >
@@ -74,7 +74,7 @@ export function CustomConnectButton() {
                       </div>
                     )}
                     <span className="text-sm">{chain.name}</span>
-                  </Button>
+                  </Button> */}
 
                   <Button
                     onClick={openAccountModal}
