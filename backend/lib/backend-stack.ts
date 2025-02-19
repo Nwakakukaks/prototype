@@ -116,7 +116,7 @@ export class SonicStack extends cdk.Stack {
 
     const httpApi = new cdk.aws_apigatewayv2.HttpApi(this, "vOneApi", {
       apiName: "vOneApi",
-      description: "API for Sonic hackathon",
+      description: "API for versionOne",
       corsPreflight: {
         allowCredentials: false,
         allowHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
@@ -128,7 +128,7 @@ export class SonicStack extends cdk.Stack {
           cdk.aws_apigatewayv2.CorsHttpMethod.PUT,
           cdk.aws_apigatewayv2.CorsHttpMethod.POST,
         ],
-        allowOrigins: ["http://localhost:3000"],
+        allowOrigins: ["http://localhost:3000", "https://versionone1.vercel.app"],
       },
       disableExecuteApiEndpoint: false,
     });
@@ -207,8 +207,8 @@ export class SonicStack extends cdk.Stack {
       TWITTER_ACCESS_SECRET: process.env.TWITTER_ACCESS_SECRET as string,
 
       // CDP
-      API_CDP_KEY_NAME: process.env.API_CDP_KEY_NAME as string,
-      API_CDP_KEY_PRIVATE_KEY: process.env.API_CDP_KEY_PRIVATE_KEY as string,
+      WALLET_KEY_NAME: process.env.WALLET_KEY_NAME as string,
+      WALLET_PRIVATE_KEY: process.env.WALLET_PRIVATE_KEY as string,
 
       // Chain
       CHAIN_ID: process.env.CHAIN_ID as string,

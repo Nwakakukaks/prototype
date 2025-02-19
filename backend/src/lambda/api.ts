@@ -77,7 +77,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         <metadata>
           <created_by>${userId}</created_by>
           <session_id>${sessionId}</session_id>
-          <character_id>User</character_id>
+          <character_id>god</character_id>
           <senders_wallet_address>${walletAddress || ''}</senders_wallet_address>
         </metadata>
         
@@ -121,7 +121,7 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         chatMode: 'STANDARD', // Using standard mode for API calls
         sendersWalletAddress: walletAddress || '',
         createdBy: userId,
-        characterId: 'User', // Default character ID for API requests
+        characterId: 'god', // Default character ID for API requests
         sessionId,
         temperature: 0, // Default temperature
         data: query,
