@@ -66,7 +66,7 @@ export class God {
         this.websocket.onmessage = async (event) => {
             try {
                 const parsedData: WebSocketFundRequestMessage = JSON.parse(event.data);
-                console.log(`God received message here bro: ${JSON.stringify(parsedData)}`);
+                console.log(`God received message: ${JSON.stringify(parsedData)}`);
                 // Always pass the message data to the original handler
                 this.onMessageReceived(JSON.stringify(parsedData));
             } catch (error) {
@@ -111,6 +111,8 @@ export class God {
                 chatMode: this.chatMode,
                 maxLength: 500,
                 topP: 0.9
+
+                
             };
             console.log(`God sending message: ${JSON.stringify(payload)}`);
             if (payload.data === "") {

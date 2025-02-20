@@ -49,7 +49,7 @@ export function CustomConnectButton() {
                 return (
                   <Button
                     onClick={openChainModal}
-                    className="bg-[#CC0000] hover:bg-[#CC0000] text-white font-semibold py-2 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base"
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base"
                   >
                     Wrong Network
                   </Button>
@@ -58,27 +58,9 @@ export function CustomConnectButton() {
 
               return (
                 <div className="flex items-center gap-3">
-                  {/* <Button
-                    onClick={openChainModal}
-                    className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white font-medium py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
-                  >
-                    {chain.hasIcon && (
-                      <div className="w-5 h-5">
-                        {chain.iconUrl && (
-                          <img
-                            alt={chain.name ?? "Chain icon"}
-                            src={chain.iconUrl}
-                            className="w-5 h-5"
-                          />
-                        )}
-                      </div>
-                    )}
-                    <span className="text-sm">{chain.name}</span>
-                  </Button> */}
-
                   <Button
                     onClick={openAccountModal}
-                    className="bg-gradient-to-r from-[#CC0000] to-[#d03636] hover:from-[#5b0202] hover:to-[#CC0000] text-white font-medium py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium py-2 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-sm">

@@ -19,7 +19,7 @@ export default clerkMiddleware(async (auth, req) => {
         const homeUrl = new URL('/landing', req.url)
         return Response.redirect(homeUrl)
     }
-})
+}) 
 
 export const config = {
     matcher: [

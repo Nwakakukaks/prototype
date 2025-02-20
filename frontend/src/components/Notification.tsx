@@ -38,7 +38,7 @@ const Notification = ({ message, timestamp, characterName, eventName, metadata }
     };
 
     const getCharacterNameClass = (name: string) => {
-        const lowerName = name.toLowerCase();
+        const lowerName = (name || "").toLowerCase();
         switch (lowerName) {
             case 'eric':
                 return 'text-green-500';
@@ -54,7 +54,7 @@ const Notification = ({ message, timestamp, characterName, eventName, metadata }
     };
 
     const getBackgroundClass = (name: string) => {
-        const lowerName = name.toLowerCase();
+        const lowerName = (name || "").toLowerCase();
         switch (lowerName) {
             case 'eric':
                 return 'bg-green-50';
@@ -70,7 +70,7 @@ const Notification = ({ message, timestamp, characterName, eventName, metadata }
     };
 
     const getBorderClass = (name: string) => {
-        const lowerName = name.toLowerCase();
+        const lowerName = (name || "").toLowerCase();
         switch (lowerName) {
             case 'eric':
                 return 'border-green-100';
@@ -100,7 +100,7 @@ const Notification = ({ message, timestamp, characterName, eventName, metadata }
     const getExternalLink = (eventName: string, metadata: Record<string, string>): string | null => {
         switch (eventName) {
             case 'contract_deployed':
-                return `https://basescan.org/address/${metadata.contractAddress}`;
+                return `https://testnet.sonicscan.org/address/${metadata.contractAddress}`;
             case 'uniswap_pool_created':
                 return `https://dexscreener.com/base/${metadata.poolAddress.toLowerCase()}`;
             case 'nft_created':

@@ -49,6 +49,8 @@ export interface InvokeModelPayload {
   data: string;
   maxTokens: number;
   topP: number;
+
+
 }
 
 const logger = new Logger({
@@ -240,6 +242,7 @@ const handleMessage = async (sessionId: string, createdBy: string, characterId: 
       sendersWalletAddress,
       wallets: wallets.map(w => `${w.agent}: ${w.address || null}`).join(', ')
     });
+    logConsole.info("Orchestrator response:", JSON.stringify(response));
 
     let responseCharacterId = response.metadata.agentName
     const targetConnection = await getItem<ConnectionItem>(`session#${sessionId}`, `character#${responseCharacterId}`, WSS_TABLE_NAME, docClient);

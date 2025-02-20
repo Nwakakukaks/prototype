@@ -420,7 +420,7 @@ export async function walletToolHandler(response: Response, conversation: Conver
                     result = await createWallet({
                         createdBy: toolUse.input.createdBy,
                         characterId: toolUse.input.characterId,
-                        sessionId: toolUse.input.sessionId,
+                        sessionId: toolUse.input.sessionId, 
                     });
                     break;
 
