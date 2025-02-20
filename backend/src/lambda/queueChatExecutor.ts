@@ -22,13 +22,13 @@ const dynamoDbStorage = new DynamoDbChatStorage(TABLE_NAME, process.env.AWS_REGI
 const getModelId = (agentName: string) => {
   switch (agentName) {
     case 'Harper':
-      return 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+      return 'anthropic.claude-3-haiku-20240307-v1:0';
     case 'Eric':
-      return 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+      return 'anthropic.claude-3-haiku-20240307-v1:0';
     case 'Rishi':
-      return 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+      return 'anthropic.claude-3-haiku-20240307-v1:0';
     default:
-      return 'us.anthropic.claude-3-5-haiku-20241022-v1:0';
+      return 'anthropic.claude-3-haiku-20240307-v1:0';
   }
 }
 
