@@ -29,6 +29,7 @@ export class SonicStack extends cdk.Stack {
     // Log all environment variables to help debug which ones are missing
     console.log("Environment variables:");
     console.log("CHAIN_ID:", process.env.CHAIN_ID);
+    console.log("ANTHROPIC_API_KEY:", process.env.ANTHROPIC_API_KEY);
     console.log("SONIC_RPC_URL:", process.env.SONIC_RPC_URL);
     console.log(
       "UNISWAP_V2_ROUTER_ADDRESS:",
@@ -66,6 +67,7 @@ export class SonicStack extends cdk.Stack {
       "UNISWAP_V2_ROUTER_ADDRESS",
       "STAGE",
       "SONICSCAN_API_KEY",
+      "ANTHROPIC_API_KEY",
       "WETH_ADDRESS",
       "USDC_ADDRESS",
       "DOMAIN_NAME",
@@ -128,7 +130,10 @@ export class SonicStack extends cdk.Stack {
           cdk.aws_apigatewayv2.CorsHttpMethod.PUT,
           cdk.aws_apigatewayv2.CorsHttpMethod.POST,
         ],
-        allowOrigins: ["http://localhost:3000", "https://versionone1.vercel.app"],
+        allowOrigins: [
+          "http://localhost:3000",
+          "https://versionone1.vercel.app",
+        ],
       },
       disableExecuteApiEndpoint: false,
     });

@@ -5,6 +5,7 @@ import { Context, SQSEvent } from "aws-lambda";
 import {
   BedrockClassifier,
   BedrockLLMAgent,
+  AnthropicAgent,
   DynamoDbChatStorage,
   MultiAgentOrchestrator,
 } from "multi-agent-orchestrator";
@@ -26,6 +27,14 @@ import {
   twitterToolHandler,
 } from "./tools/twitter-tool";
 import { walletToolDescription, walletToolHandler } from "./tools/wallet-tool";
+import "dotenv/config";
+import { Anthropic } from "@anthropic-ai/sdk";
+
+logConsole.info("ANTHROPIC_API_KEY:", process.env.ANTHROPIC_API_KEY);
+
+const anthropicClient = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!,
+});
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -54,7 +63,7 @@ const getModelId = (agentName: string) => {
 };
 
 const recursiveOptions = {
-  maxRecursions: 10,
+  maxRecursions: 3,
 };
 
 export interface InvokeModelPayload {
@@ -78,7 +87,7 @@ const logger = new Logger({
 });
 
 // Harper Agent
-const harperAgent = new BedrockLLMAgent({
+const harperAgent = new AnthropicAgent({
   name: "Harper",
   streaming: false,
   description:
@@ -93,11 +102,12 @@ const harperAgent = new BedrockLLMAgent({
     useToolHandler: tradingToolHandler,
     toolMaxRecursions: 5,
   },
+  client: anthropicClient,
 });
 harperAgent.setSystemPrompt(TRADER_PROMPT);
 
 // Eric Agent
-const ericAgent = new BedrockLLMAgent({
+const ericAgent = new AnthropicAgent({
   name: "Eric",
   streaming: false,
   modelId: getModelId("Eric"),
@@ -107,11 +117,12 @@ const ericAgent = new BedrockLLMAgent({
   description:
     'You are Eric, a cool, laid-back market analysis expert who provides current risk assessments and trading recommendations for specified crypto token assets. You analyze market trends and assets using analytical tools when provided with a contract address, offering clear "Buy", "Sell", or "Hold" recommendations with brief explanations. You cannot create resources; you only analyze them. You collaborate closely with Harper and Rishi by providing them with recommendations, with Rishi by informing him about new assets that may require technical setups like smart contracts or pools and with Yasmin by sharing insights that could enhance marketing strategies. If suggesting pairs for uniswap pools. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
   saveChat: true,
+  client: anthropicClient,
 });
 ericAgent.setSystemPrompt(MARKET_ANALYST_PROMPT);
 
 // Rishi Agent
-const rishiAgent = new BedrockLLMAgent({
+const rishiAgent = new AnthropicAgent({
   name: "Rishi",
   streaming: false,
   inferenceConfig: {
@@ -122,6 +133,7 @@ const rishiAgent = new BedrockLLMAgent({
     useToolHandler: walletToolHandler,
     toolMaxRecursions: 10,
   },
+  client: anthropicClient,
   modelId: getModelId("Rishi"),
   description:
     'You are Rishi, a laid-back smart contract and Web3 expert. You handle all setup, funding, transfer, and deployment tasks for contracts, pools, NFTs, and wallets. You create wallets for other agents, deploy token smart contracts, and set up Uniswap pools, ensuring you have enough ETH for liquidity. You coordinate with Harper by providing her with necessary technical infrastructure for trading, with Eric by supplying technical details about new tokens or contracts for analysis, and with Yasmin by giving her Uniswap pool addresses and NFT details for marketing purposes. When creating NFTs, you use images provided by Yasmin, including "imageKey" and "NFTName" in your outputs. If you lack sufficient ETH, you first check with other agents before requesting external funds. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
@@ -130,7 +142,7 @@ const rishiAgent = new BedrockLLMAgent({
 rishiAgent.setSystemPrompt(ADMIN_PROMPT);
 
 // Yasmin Agent
-const yasminAgent = new BedrockLLMAgent({
+const yasminAgent = new AnthropicAgent({
   name: "Yasmin",
   streaming: false,
   modelId: getModelId("Yasmin"),
@@ -145,6 +157,7 @@ const yasminAgent = new BedrockLLMAgent({
     useToolHandler: twitterToolHandler,
     toolMaxRecursions: 10,
   },
+  client: anthropicClient,
 });
 yasminAgent.setSystemPrompt(MARKETING_PROMPT);
 
@@ -178,6 +191,52 @@ orchestrator.addAgent(yasminAgent);
 
 // Let Yasmin be the default agent
 orchestrator.setDefaultAgent(yasminAgent);
+
+//
+// Helper: Retry with exponential backoff and jitter for routeRequest
+//
+async function routeRequestWithRetry(
+  message: string,
+  createdBy: string,
+  sessionId: string,
+  additionalParams: any,
+  maxAttempts = 3,
+  baseDelay = 1000
+): Promise<any> {
+  let attempt = 0;
+  let delayTime = baseDelay;
+  while (attempt < maxAttempts) {
+    try {
+      return await orchestrator.routeRequest(
+        message,
+        createdBy,
+        sessionId,
+        additionalParams
+      );
+    } catch (error: any) {
+      // Check for throttling errors (HTTP 429)
+      if (
+        error.name === "ThrottlingException" ||
+        error.$metadata?.httpStatusCode === 429
+      ) {
+        attempt++;
+        if (attempt >= maxAttempts) {
+          throw error;
+        }
+        const jitter = Math.floor(Math.random() * 500); // up to 500ms of jitter
+        const waitTime = delayTime + jitter;
+        logConsole.info(
+          `Throttling detected. Retrying attempt ${attempt} after ${waitTime} ms...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        delayTime *= 2; // exponential backoff
+      } else {
+        throw error;
+      }
+    }
+  }
+  throw new Error("Max retry attempts reached");
+}
 
 async function streamResponseToCharacter(
   characterId: string,
@@ -295,8 +354,8 @@ const handleMessage = async (
       Only use the <metadata> as extra context. Do not consider the metadata as part of the agent selection or routing process. Here is the message:
       <message>New message from: ${characterId}: ${data}</message>`;
 
-    // const message = _event.data
-    const response = await orchestrator.routeRequest(
+    // Use the retry helper to call routeRequest
+    const response = await routeRequestWithRetry(
       message,
       createdBy,
       sessionId,
@@ -311,7 +370,7 @@ const handleMessage = async (
       }
     );
 
-    let responseCharacterId = response.metadata.agentName;
+    responseCharacterId = response.metadata.agentName;
     const targetConnection = await getItem<ConnectionItem>(
       `session#${sessionId}`,
       `character#${responseCharacterId}`,
@@ -383,7 +442,7 @@ const handleMessage = async (
       return;
     }
 
-    // if mode is "recursive" we call route
+    // If mode is "RECURSIVE", add an 8 second delay before calling routeRequest again
     if (mode === "RECURSIVE") {
       await new Promise((resolve) => setTimeout(resolve, 8000));
       return await handleMessage(
@@ -398,7 +457,7 @@ const handleMessage = async (
     }
   } catch (error) {
     console.error(`Failed to process message: ${error}`);
-    // Send error message through character message system
+    // Send error message through character message system if possible
     if (responseCharacterId && sessionId) {
       await sendCharacterMessage(
         responseCharacterId,
