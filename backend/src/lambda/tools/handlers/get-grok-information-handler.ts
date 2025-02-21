@@ -35,7 +35,7 @@ export async function getGrokAnalysis(createdBy: string, characterId: string, se
         logConsole.info('Starting Grok analysis for user:', username);
 
         await sendCharacterMessage(characterId, sessionId, docClient, "Okay, I'll check whats happening on X.");
-        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export async function getGrokAnalysis(createdBy: string, characterId: string, se
                             : `How would we best bring the world onchain? Keep your response very concise and to the point in LESS THAN 50 words. Consider that we could launch ERC20 tokens, NFTs create tweets and so on. Return notable handles that are aligned to this goal.`
                     }
                 ],
-                model: 'grok-beta',
+                model: 'llama-3.3-70b-versatile',
                 stream: false,
                 temperature: 0
             })

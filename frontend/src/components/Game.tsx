@@ -1065,6 +1065,7 @@ const Game = ({
         </div>
         <div className="flex-1 overflow-hidden rounded-lg">
           <Chat
+            chatMode={chatMode}
             messages={chatMessages}
             onSendMessage={handleGlobalMessage}
             disabled={!isInitialized}
@@ -1127,6 +1128,7 @@ const Game = ({
       {/* Mobile Chat and Notifications */}
       <div className="md:hidden fixed bottom-4 left-4 right-4 flex gap-2">
         <Chat
+          chatMode={chatMode}
           messages={chatMessages}
           onSendMessage={handleGlobalMessage}
           disabled={!isInitialized}

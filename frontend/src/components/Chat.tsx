@@ -4,6 +4,7 @@ import { pixelify_sans } from "@/app/fonts";
 import { Name } from "@coinbase/onchainkit/identity";
 import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
+import { Loader2 } from "lucide-react";
 import { base } from "wagmi/chains";
 import { CustomConnectButton } from "./ConnectButton";
 
@@ -17,6 +18,7 @@ interface ChatMessage {
 
 interface ChatProps {
   messages: ChatMessage[];
+  chatMode: "STANDARD" | "RECURSIVE";
   onSendMessage: (message: string) => void;
   disabled?: boolean;
 }
@@ -29,10 +31,21 @@ const characterColors: { [key: string]: string } = {
   You: "text-blue-600",
 };
 
-const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
+const Chat = ({
+  messages,
+  onSendMessage,
+  disabled = false,
+  chatMode,
+}: ChatProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Loading state for showing reasoning with a spinner
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Reasoning..");
+  const [recursiveCount, setRecursiveCount] = useState(0);
 
   // Smooth scroll to bottom whenever messages change
   useEffect(() => {
@@ -42,13 +55,62 @@ const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
         behavior: "smooth",
       });
     }
-  }, [messages]);
+    // When a new message arrives, remove the loader (if active)
+    if (loading) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setLoading(false);
+      // In recursive mode increase the count until 10
+      if (recursiveCount < 10) {
+        setRecursiveCount((prev) => prev + 1);
+        setLoading(true);
+        setLoadingText("reasoning...");
+        startLoadingTimer();
+      }
+    }
+  }, [messages, loading, chatMode]);
+
+  // Clean up the timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const startLoadingTimer = () => {
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      // If still loading after 8 secs, change text and stop the loader
+      setLoadingText("Seems no more action to take.. standing by..");
+      setLoading(false);
+    }, 8000);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
       onSendMessage(message.trim());
       setMessage("");
+
+      // In RECURSIVE mode, only show the loader if the recursion limit has not been hit.
+      if (chatMode === "RECURSIVE") {
+        if (recursiveCount < 10) {
+          setRecursiveCount((prev) => prev + 1);
+          setLoading(true);
+          setLoadingText("reasoning...");
+          startLoadingTimer();
+        }
+      } else {
+        // STANDARD mode: always show the loader until a new message comes.
+        setLoading(true);
+        setLoadingText("reasoning...");
+        startLoadingTimer();
+      }
     }
   };
 
@@ -78,7 +140,7 @@ const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
               Chat
             </h2>
 
-            <CustomConnectButton/>
+            <CustomConnectButton />
           </div>
         </div>
         <div
@@ -112,6 +174,23 @@ const Chat = ({ messages, onSendMessage, disabled = false }: ChatProps) => {
               <p className="text-sm text-gray-700 break-words">{msg.message}</p>
             </div>
           ))}
+
+          {/* Loader message when in loading state */}
+          {loading && (
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm text-orange-600">
+                  System
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-700 break-words">
+                  {loadingText}
+                </p>
+                <Loader2 className="animate-spin" size={20} />
+              </div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
