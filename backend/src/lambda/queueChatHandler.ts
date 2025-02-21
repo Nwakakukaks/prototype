@@ -25,19 +25,21 @@ const handleConnectSetup = async (connectionId: string, sessionId: string, chara
 }
 
 interface IncomingMessage {
-  action: "sendMessage",
-  data: string,
-  country: string,
-  caseId: string,
-  createdBy: string,
-  model: string,
-  characterId: string,
-  sessionId: string,
-  temperature: string,
-  sendersWalletAddress: string,
-  maxLength: string,
-  topP: string
+  action: "sendMessage";
+  data: string;
+  country: string;
+  caseId: string;
+  createdBy: string;
+  model: string;
+  characterId: string;
+  sessionId: string;
+  temperature: string;
+  sendersWalletAddress: string;
+  maxLength: string;
+  topP: string;
+  chatMode: "STANDARD" | "RECURSIVE";
 }
+
 
 interface InvokeModelPayload {
   createdBy: string,
@@ -52,6 +54,7 @@ interface InvokeModelPayload {
   topP: string,
   connectionId: string,
   data: string,
+  chatMode: "STANDARD" | "RECURSIVE";
 }
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
@@ -94,7 +97,8 @@ export const handler = async (event: APIGatewayProxyEvent, context: Context): Pr
         stage: event.requestContext.stage as string,
         maxTokens: body.maxLength,
         topP: body.topP,
-      }
+        chatMode: body.chatMode,
+      };
 
       const send = await sqsClient.send(new SendMessageCommand({
         QueueUrl: process.env.SQS_QUEUE_URL,

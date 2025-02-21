@@ -161,6 +161,40 @@ export async function sendMessageToClient(apigwManagementApi: ApiGatewayManageme
     }
 }
 
+// rateLimiter.ts
+export class BedrockRateLimiter {
+    private lastRequestTime = 0;
+    private readonly minDelay: number;
+    private queue: (() => void)[] = [];
+  
+    constructor(minDelay = 1000) { // Default 1 second between requests
+      this.minDelay = minDelay;
+    }
+  
+    async acquire(): Promise<void> {
+      return new Promise((resolve) => {
+        const tryAcquire = () => {
+          const now = Date.now();
+          const elapsed = now - this.lastRequestTime;
+  
+          if (elapsed >= this.minDelay) {
+            this.lastRequestTime = now;
+            resolve();
+          } else {
+            setTimeout(tryAcquire, this.minDelay - elapsed);
+          }
+        };
+  
+        this.queue.push(tryAcquire);
+        if (this.queue.length === 1) tryAcquire();
+      });
+    }
+  
+    get pendingRequests(): number {
+      return this.queue.length;
+    }
+  }
+
 export const ERC20_FLATTENED_CONTRACT = `// Sources flattened with hardhat v2.22.15 https://hardhat.org
 
 // SPDX-License-Identifier: MIT

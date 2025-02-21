@@ -8,13 +8,7 @@ import {
   DynamoDbChatStorage,
   MultiAgentOrchestrator,
 } from "multi-agent-orchestrator";
-import { BedrockRuntimeClient } from "@aws-sdk/client-bedrock-runtime";
-import {
-  ConnectionItem,
-  logConsole,
-  sendCharacterMessage,
-  BedrockRateLimiter,
-} from "../utils";
+import { ConnectionItem, logConsole, sendCharacterMessage } from "../utils";
 import { createItem, getItem } from "./dynamo_v3";
 import { CharacterWallet } from "./tools/handlers/create-wallet-handler";
 import {
@@ -35,7 +29,6 @@ import { walletToolDescription, walletToolHandler } from "./tools/wallet-tool";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
-const bedrockLimiter = new BedrockRateLimiter(1500);
 const TABLE_NAME = process.env.CORE_TABLE_NAME as string;
 const WSS_TABLE_NAME = process.env.WSS_TABLE_NAME as string;
 const TTL_DURATION = 3600; // in seconds
@@ -63,114 +56,6 @@ const getModelId = (agentName: string) => {
 const recursiveOptions = {
   maxRecursions: 10,
 };
-
-interface ThrottlingConfig {
-  baseDelay: number;
-  maxDelay: number;
-  jitterFactor: number;
-}
-
-class RecursiveMessageHandler {
-  private config: ThrottlingConfig;
-
-  constructor(config: Partial<ThrottlingConfig> = {}) {
-    this.config = {
-      baseDelay: 5000,
-      maxDelay: 10000,
-      jitterFactor: 0.1,
-      ...config,
-    };
-  }
-
-  private calculateDelay(recursionCount: number): number {
-    // Calculate exponential backoff
-    const baseDelay = Math.min(
-      this.config.baseDelay * Math.pow(2, recursionCount),
-      this.config.maxDelay
-    );
-
-    // Add jitter to prevent thundering herd
-    const jitter = Math.random() * baseDelay * this.config.jitterFactor;
-    return baseDelay + jitter;
-  }
-
-  async handleRecursiveMessage(
-    sessionId: string,
-    createdBy: string,
-    characterId: string,
-    sendersWalletAddress: string,
-    data: string,
-    currentRecursion: number,
-    maxRecursions: number,
-    handleMessage: (
-      sessionId: string,
-      createdBy: string,
-      characterId: string,
-      mode: "RECURSIVE" | "STANDARD",
-      sendersWalletAddress: string,
-      data: string,
-      currentRecursion: number
-    ) => Promise<any>
-  ): Promise<void> {
-    try {
-      if (currentRecursion >= maxRecursions) {
-        logConsole.info(`Max recursion reached: ${currentRecursion}`);
-        return;
-      }
-
-      // Calculate delay with exponential backoff and jitter
-      const delay = this.calculateDelay(currentRecursion);
-      logConsole.info(
-        `Waiting ${delay}ms before recursive call (attempt ${currentRecursion + 1}/${maxRecursions})`
-      );
-
-      // Wait for calculated delay
-      await new Promise((resolve) => setTimeout(resolve, delay));
-
-      // Make the recursive call
-      const result = await handleMessage(
-        sessionId,
-        createdBy,
-        characterId,
-        "RECURSIVE",
-        sendersWalletAddress,
-        data,
-        currentRecursion + 1
-      );
-
-      return result;
-    } catch (error: any) {
-      if (
-        error?.name === "ThrottlingException" ||
-        error?.$metadata?.httpStatusCode === 429
-      ) {
-        logConsole.warn(
-          `Throttling detected on recursion ${currentRecursion}, retrying with increased delay`
-        );
-
-        // For throttling errors, add extra delay before retry
-        const throttleDelay = this.calculateDelay(currentRecursion + 2); // Use higher recursion count for more delay
-        await new Promise((resolve) => setTimeout(resolve, throttleDelay));
-
-        // Retry the recursive call
-        return this.handleRecursiveMessage(
-          sessionId,
-          createdBy,
-          characterId,
-          sendersWalletAddress,
-          data,
-          currentRecursion, // Keep same recursion count for retry
-          maxRecursions,
-          handleMessage
-        );
-      }
-
-      // For non-throttling errors, log and rethrow
-      logConsole.error(`Error in recursive message handling:`, error);
-      throw error;
-    }
-  }
-}
 
 export interface InvokeModelPayload {
   connectionId: string;
@@ -411,7 +296,6 @@ const handleMessage = async (
       <message>New message from: ${characterId}: ${data}</message>`;
 
     // const message = _event.data
-    await bedrockLimiter.acquire();
     const response = await orchestrator.routeRequest(
       message,
       createdBy,
@@ -426,8 +310,22 @@ const handleMessage = async (
           .join(", "),
       }
     );
+    logConsole.info("Orchestrator response:", JSON.stringify(response));
 
-    let responseCharacterId = response.metadata.agentName;
+    const outputText = response.output.toString();
+    let overriddenAgent = response.metadata.agentName;
+    const regex = /^Hey\s+(\w+),/i;
+    const match = outputText.trim().match(regex);
+    if (match) {
+      const candidate = match[1];
+      if (candidate.toLowerCase() !== overriddenAgent.toLowerCase()) {
+        overriddenAgent = candidate;
+      }
+    }
+    // Use the overridden agent for everything:
+    logConsole.info("Overridden agent:", overriddenAgent);
+    responseCharacterId = overriddenAgent;
+
     const targetConnection = await getItem<ConnectionItem>(
       `session#${sessionId}`,
       `character#${responseCharacterId}`,
@@ -455,17 +353,6 @@ const handleMessage = async (
     );
 
     if (targetConnection) {
-      logConsole.info(`> Agent ID: ${response.metadata.agentId}`);
-      logConsole.info(`> Agent Name: ${response.metadata.agentName}`);
-      logConsole.info(`> User Input: ${response.metadata.userInput}`);
-      logConsole.info(`> User ID: ${response.metadata.userId}`);
-      logConsole.info(`> Session ID: ${response.metadata.sessionId}`);
-      logConsole.info(
-        `> Additional Parameters:`,
-        response.metadata.additionalParams
-      );
-      logConsole.info(`\n> Response: ${JSON.stringify(response)}`);
-
       if (response.streaming === true) {
         logConsole.info("\n** RESPONSE STREAMING ** \n");
         for await (const chunk of response.output) {
@@ -489,7 +376,7 @@ const handleMessage = async (
           responseCharacterId,
           sessionId,
           docClient,
-          response.output.toString()
+          outputText
         );
       }
     }
@@ -501,21 +388,20 @@ const handleMessage = async (
 
     // if mode is "recursive" we call route
     if (mode === "RECURSIVE") {
-      const recursiveHandler = new RecursiveMessageHandler({
-        baseDelay: 5000,
-        maxDelay: 10000,
-        jitterFactor: 0.1,
-      });
-
-      return await recursiveHandler.handleRecursiveMessage(
+      logConsole.info(
+        "Recursive mode activated with agentid:",
+        responseCharacterId,
+        "and output text:",
+        outputText
+      );
+      return await handleMessage(
         sessionId,
         createdBy,
         responseCharacterId,
+        mode,
         sendersWalletAddress,
-        response.output.toString(),
-        currentRecursion,
-        recursiveOptions.maxRecursions, 
-        handleMessage
+        outputText,
+        currentRecursion + 1
       );
     }
   } catch (error) {
