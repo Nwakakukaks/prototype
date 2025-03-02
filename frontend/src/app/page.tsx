@@ -1,4 +1,5 @@
-'use client'
+/* eslint-disable @next/next/no-img-element */
+"use client";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CustomConnectButton } from "@/components/ConnectButton";
 import { NavBar } from "@/components/navbar";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Startup {
   name: string;
@@ -66,11 +68,47 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
   </div>
 );
 
+const LiveIndicator = () => (
+  <div className="inline-flex items-center">
+    <div className="relative w-2.5 h-2.5 mr-2">
+      <div className="absolute w-full h-full rounded-full bg-green-500"></div>
+      <div className="absolute w-full h-full rounded-full bg-green-500 animate-ping"></div>
+    </div>
+    <span>Live</span>
+  </div>
+);
+
+const StartupMarquee = ({ startups }: { startups: Startup[] }) => {
+  const duplicatedStartups = [
+    ...startups,
+    ...startups,
+    ...startups,
+    ...startups,
+  ];
+
+  return (
+    <div className="w-full overflow-hidden bg-white py-5 mb-12">
+      <div className="relative flex whitespace-nowrap animate-scroll">
+        <div className="flex gap-8 animate-scroll">
+          {duplicatedStartups.map((startup, index) => (
+            <div key={index} className="inline-flex items-center gap-3 px-4">
+              <span className="text-orange-500">•</span>
+              <span className="text-gray-900 font-medium whitespace-nowrap">
+                {startup.name}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const LandingPage: React.FC = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push('/home'); 
+    router.push("/start");
   };
 
   const recentStartups: Startup[] = [
@@ -133,17 +171,14 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background Mascot Images */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
           src="https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J34Nc761zOtmS4gyWw60ueoFxcn1br78fIZYvJ"
           alt="Mascot 1"
-          className="absolute top-1/3 right-5 w-36"
+          className="absolute top-1/3 right-5 w-36 mt-40"
         />
       </div>
 
-      {/* Main Content with higher z-index */}
-      {/* nav */}
       <NavBar />
       <div className="relative z-10">
         {/* Hero Section */}
@@ -156,24 +191,33 @@ const LandingPage: React.FC = () => {
           </h1>
           <div className="flex flex-col items-center gap-2">
             <img
+              alt="Arrows pointing to button"
               className="w-20"
               src="https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3vJOwXMTAmeTSnXHbfhYk8MFj6RCAl0B3E2pO"
             />
             <Button
               size={"lg"}
               onClick={handleClick}
-              className="rounded-full py-6 px-10 text-lg font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+              className="rounded-full py-6 px-10 text-lg font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors relative pulse-button"
             >
               Get Started
             </Button>
           </div>
         </div>
 
-        {/* Recent Startups Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <h2 className="text-2xl font-bold text-gray-50 mb-8">
-            Recently Launched Dapps
-          </h2>
+        {/* New Marquee Component */}
+        <StartupMarquee startups={recentStartups} />
+
+        {/* Recent Startups Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center gap-3 mb-8">
+            <h2 className="text-2xl font-bold text-gray-50">
+              Recently Launched Dapps
+            </h2>
+            <LiveIndicator />
+          </div>
+
+          {/* Startups Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentStartups.map((startup, index) => (
               <StartupCard key={index} startup={startup} />
@@ -188,7 +232,11 @@ const LandingPage: React.FC = () => {
             <p>&copy; 2025 vOne Inc.</p>
             <p>
               Built with{" "}
-              <span role="img" aria-label="love">
+              <span
+                role="Image 
+              "
+                aria-label="love"
+              >
                 ❤️
               </span>{" "}
               by VersionOne team
@@ -200,24 +248,20 @@ const LandingPage: React.FC = () => {
                 rel="noopener noreferrer"
                 className="hover:underline"
               >
-                <img src='https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J35QJSvrKJiQOmPLbwU0Y7WR9qa2zjN6CVrdko' className="h-8"/>
+                <img
+                  alt="product hunt banner"
+                  src="https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J35QJSvrKJiQOmPLbwU0Y7WR9qa2zjN6CVrdko"
+                  className="h-8"
+                />
               </a>
               <a
                 href="https://example.com/brand-kit"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline mt-2 font-medium mt-[6px]"
+                className="hover:underline font-medium mt-[6px]"
               >
                 Brand Kit
               </a>
-              {/* <a
-                href="https://example.com/media"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline mt-2 font-medium mt-[6px]"
-              >
-                Media
-              </a> */}
             </div>
           </div>
         </div>

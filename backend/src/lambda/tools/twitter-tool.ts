@@ -29,7 +29,7 @@ export const twitterToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is performing the action. This will always be Yasmin.",
+                            description: "The character that is performing the action. This will always be Monad.",
                         },
                         sessionId: {
                             type: "string",
@@ -76,7 +76,7 @@ export const twitterToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is performing the action. This will always be Yasmin.",
+                            description: "The character that is performing the action. This will always be Monad.",
                         },
                         sessionId: {
                             type: "string",
@@ -91,7 +91,7 @@ export const twitterToolDescription = [
     {
         toolSpec: {
             name: "Create_Image_Tool",
-            description: "Creates an image given a prompt and explicitly returns its imageKey value onwards to Rishi",
+            description: "Creates an image given a prompt and explicitly returns its imageKey value onwards to Qwen",
             inputSchema: {
                 json: {
                     type: "object",
@@ -110,7 +110,7 @@ export const twitterToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is performing the action. This will always be Yasmin.",
+                            description: "The character that is performing the action. This will always be Monad.",
                         },
                         sessionId: {
                             type: "string",

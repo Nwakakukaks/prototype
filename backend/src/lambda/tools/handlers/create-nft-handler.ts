@@ -55,7 +55,7 @@ export async function createNFT({ createdBy, sessionId, characterId, NFTName, de
         makeContractMetadata({
             imageFile,
             name: NFTName,
-            description: description || "An NFT created by Yasmin"
+            description: description || "An NFT created by Monad"
         }),
         makeImageTokenMetadata({
             imageFile,

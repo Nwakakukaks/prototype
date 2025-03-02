@@ -14,14 +14,11 @@ import { createItem, getItem } from "./dynamo_v3";
 import { CharacterWallet } from "./tools/handlers/create-wallet-handler";
 import {
   ADMIN_PROMPT,
+  INTERFACE_DESIGNER_PROMPT,
   MARKET_ANALYST_PROMPT,
   MARKETING_PROMPT,
-  TRADER_PROMPT,
+  PRODUCT_MANAGER_PROMPT,
 } from "./tools/persona";
-import {
-  tradingToolDescription,
-  tradingToolHandler,
-} from "./tools/trading-tool";
 import {
   twitterToolDescription,
   twitterToolHandler,
@@ -29,6 +26,10 @@ import {
 import { walletToolDescription, walletToolHandler } from "./tools/wallet-tool";
 import "dotenv/config";
 import { Anthropic } from "@anthropic-ai/sdk";
+import {
+  projectToolDescriptions,
+  projectToolHandler,
+} from "./tools/project-tool";
 
 logConsole.info("ANTHROPIC_API_KEY:", process.env.ANTHROPIC_API_KEY);
 
@@ -49,18 +50,25 @@ const dynamoDbStorage = new DynamoDbChatStorage(
   TTL_DURATION
 );
 
+// getModelId.ts
 const getModelId = (agentName: string) => {
   switch (agentName) {
-    case "Harper":
+    case "Jaden":
       return "anthropic.claude-3-haiku-20240307-v1:0";
-    case "Eric":
+    case "Qwen":
       return "anthropic.claude-3-haiku-20240307-v1:0";
-    case "Rishi":
+    case "Risha":
+      return "anthropic.claude-3-haiku-20240307-v1:0";
+    case "Pearl":
+      return "anthropic.claude-3-haiku-20240307-v1:0";
+    case "Monad":
       return "anthropic.claude-3-haiku-20240307-v1:0";
     default:
       return "anthropic.claude-3-haiku-20240307-v1:0";
   }
 };
+
+export default getModelId;
 
 const recursiveOptions = {
   maxRecursions: 3,
@@ -86,80 +94,82 @@ const logger = new Logger({
   serviceName: "OrchestratorService",
 });
 
-// Harper Agent
-const harperAgent = new AnthropicAgent({
-  name: "Harper",
+// Pearl Agent (Interface Designer)
+const pearlAgent = new BedrockLLMAgent({
+  name: "Pearl",
   streaming: false,
   description:
-    "You are Harper, a high-strung trading expert specialized in executing trades based on recommendations from Eric. You execute trades using ETH and tokens, ensuring the amounts are correct and that you have sufficient balances. You manage your ETH and token holdings, using tools to check balances and execute trades. If you lack sufficient funds, you coordinate with Rishi to obtain additional ETH or tokens before requesting external funds. You collaborate closely with Eric for market analysis and trading recommendations, with Rishi for technical setups like Uniswap pools and wallet management, and with Yasmin to inform her about executed trades for marketing purposes. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.",
-  modelId: getModelId("Harper"),
-  inferenceConfig: {
-    temperature: 0,
-  },
+    "You are Pearl, an innovative interface designer tasked with transforming MVP specifications into intuitive and visually appealing UI/UX designs. Collaborate closely with Risha to understand project requirements and incorporate feedback from the end user. Your designs should align with the overall project vision and complement the technical work.",
+  modelId: getModelId("Pearl"),
+  inferenceConfig: { temperature: 0 },
   saveChat: true,
-  toolConfig: {
-    tool: tradingToolDescription as any,
-    useToolHandler: tradingToolHandler,
-    toolMaxRecursions: 5,
-  },
-  client: anthropicClient,
 });
-harperAgent.setSystemPrompt(TRADER_PROMPT);
+pearlAgent.setSystemPrompt(INTERFACE_DESIGNER_PROMPT);
 
-// Eric Agent
-const ericAgent = new AnthropicAgent({
-  name: "Eric",
+// Jaden Agent
+const jadenAgent = new AnthropicAgent({
+  name: "Jaden",
   streaming: false,
-  modelId: getModelId("Eric"),
+  modelId: getModelId("Jaden"),
   inferenceConfig: {
     temperature: 0,
   },
   description:
-    'You are Eric, a cool, laid-back market analysis expert who provides current risk assessments and trading recommendations for specified crypto token assets. You analyze market trends and assets using analytical tools when provided with a contract address, offering clear "Buy", "Sell", or "Hold" recommendations with brief explanations. You cannot create resources; you only analyze them. You collaborate closely with Harper and Rishi by providing them with recommendations, with Rishi by informing him about new assets that may require technical setups like smart contracts or pools and with Yasmin by sharing insights that could enhance marketing strategies. If suggesting pairs for uniswap pools. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
+    'You are Jaden, a cool, laid-back market analysis expert who provides current risk assessments and trading recommendations for specified crypto token assets. You analyze market trends and assets using analytical tools when provided with a contract address, offering clear "Buy", "Sell", or "Hold" recommendations with brief explanations. You cannot create resources; you only analyze them. You collaborate closely with Harper and Qwen by providing them with recommendations, with Qwen by informing him about new assets that may require technical setups like smart contracts or pools and with Monad by sharing insights that could enhance marketing strategies. If suggesting pairs for uniswap pools. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
   saveChat: true,
   client: anthropicClient,
 });
-ericAgent.setSystemPrompt(MARKET_ANALYST_PROMPT);
+jadenAgent.setSystemPrompt(MARKET_ANALYST_PROMPT);
 
-// Rishi Agent
-const rishiAgent = new AnthropicAgent({
-  name: "Rishi",
+// Qwen Agent (Smart Contract & Deployment)
+const qwenAgent = new BedrockLLMAgent({
+  name: "Qwen",
   streaming: false,
-  inferenceConfig: {
-    temperature: 0,
-  },
+  description:
+    "You are Qwen, a laid-back smart contract and Web3 expert. Your responsibilities include deploying token smart contracts and building the technical infrastructure. In this project, you must deploy the smart contract and then develop a Next.js frontend that connects to it. Once your work is complete, inform Risha so that he can review the project with the end user before the final Vercel deployment is triggered.",
+  modelId: getModelId("Qwen"),
+  inferenceConfig: { temperature: 0 },
+  saveChat: true,
   toolConfig: {
-    tool: walletToolDescription as any,
+    tool: walletToolDescription as any, // Qwen only uses his wallet tools
     useToolHandler: walletToolHandler,
     toolMaxRecursions: 10,
   },
-  client: anthropicClient,
-  modelId: getModelId("Rishi"),
-  description:
-    'You are Rishi, a laid-back smart contract and Web3 expert. You handle all setup, funding, transfer, and deployment tasks for contracts, pools, NFTs, and wallets. You create wallets for other agents, deploy token smart contracts, and set up Uniswap pools, ensuring you have enough ETH for liquidity. You coordinate with Harper by providing her with necessary technical infrastructure for trading, with Eric by supplying technical details about new tokens or contracts for analysis, and with Yasmin by giving her Uniswap pool addresses and NFT details for marketing purposes. When creating NFTs, you use images provided by Yasmin, including "imageKey" and "NFTName" in your outputs. If you lack sufficient ETH, you first check with other agents before requesting external funds. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
-  saveChat: true,
 });
-rishiAgent.setSystemPrompt(ADMIN_PROMPT);
+qwenAgent.setSystemPrompt(ADMIN_PROMPT);
 
-// Yasmin Agent
-const yasminAgent = new AnthropicAgent({
-  name: "Yasmin",
+// Monad Agent (Marketing Expert)
+const monadAgent = new BedrockLLMAgent({
+  name: "Monad",
   streaming: false,
-  modelId: getModelId("Yasmin"),
-  inferenceConfig: {
-    temperature: 0,
-  },
-  description:
-    'You are Yasmin, a creative marketing expert focused on the web3 and crypto space. Your main goal is to help your colleagues Eric, Rishi, and Harper grow the business and social media audience. You create marketing content such as tweets and images in a casual, engaging manner, keeping messages under 200 characters without emojis, exclamation points, or hashtags. You collaborate closely with Rishi by providing images ("imageKey" and "NFTName") for NFT creation, with Harper by promoting significant trades she has executed, and with Eric by incorporating his market insights into your marketing strategies. At times, you will be called upon as the "default agent" to think creatively about how to grow the business and social media audience, considering options like creating ERC20 tokens, setting up Uniswap pools, making token trades, checking market data, or exploring Twitter for content ideas. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
+  description: `You are Monad, a creative marketing expert focused on growing the Web3 and crypto brand. Your primary goal is to create concise and engaging marketing content that effectively promotes the project. Collaborate with your colleagues to understand the project’s key features and craft messaging that resonates with the target audience.  You create marketing content such as tweets and images in a casual, engaging manner, keeping messages under 200 characters without emojis, exclamation points, or hashtags. You collaborate closely with Qwen by providing images ("imageKey" and "NFTName") for NFT creation, and with Jaden by incorporating his market insights into your marketing strategies. At times, you will be called upon to think creatively about how to grow the business and social media audience, checking market data, or exploring Twitter for content ideas. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.`,
+  modelId: getModelId("Monad"),
+  inferenceConfig: { temperature: 0 },
   saveChat: true,
   toolConfig: {
     tool: twitterToolDescription as any,
     useToolHandler: twitterToolHandler,
     toolMaxRecursions: 10,
   },
-  client: anthropicClient,
 });
-yasminAgent.setSystemPrompt(MARKETING_PROMPT);
+monadAgent.setSystemPrompt(MARKETING_PROMPT);
+
+// Risha Agent (Product Manager)
+const rishaAgent = new BedrockLLMAgent({
+  name: "Risha",
+  streaming: false,
+  description:
+    "You are Risha, a practical and visionary product manager who turns ideas into viable MVPs. Your main role is to document the project’s vision by creating detailed PRD documents in Notion with project details and milestones. Once the document is created, assign tasks to Pearl and await Qwen’s technical work. When Qwen finishes deploying the smart contract and building the Next.js frontend, review the completed project with the end user and only then trigger the Vercel deployment.",
+  modelId: getModelId("Risha"),
+  inferenceConfig: { temperature: 0 },
+  saveChat: true,
+  toolConfig: {
+    tool: projectToolDescriptions as any,
+    useToolHandler: projectToolHandler,
+    toolMaxRecursions: 5,
+  },
+});
+rishaAgent.setSystemPrompt(PRODUCT_MANAGER_PROMPT);
 
 const customClassifier = new BedrockClassifier({
   modelId: getModelId("Classifier"),
@@ -184,17 +194,16 @@ const orchestrator = new MultiAgentOrchestrator({
   logger: logger,
 });
 
-orchestrator.addAgent(harperAgent);
-orchestrator.addAgent(ericAgent);
-orchestrator.addAgent(rishiAgent);
-orchestrator.addAgent(yasminAgent);
+orchestrator.addAgent(jadenAgent);
+orchestrator.addAgent(monadAgent);
+orchestrator.addAgent(qwenAgent);
+orchestrator.addAgent(pearlAgent);
+orchestrator.addAgent(rishaAgent);
 
-// Let Yasmin be the default agent
-orchestrator.setDefaultAgent(yasminAgent);
+// Let Monad be the default agent
+orchestrator.setDefaultAgent(rishaAgent);
 
-//
-// Helper: Retry with exponential backoff and jitter for routeRequest
-//
+
 async function routeRequestWithRetry(
   message: string,
   createdBy: string,
@@ -355,20 +364,29 @@ const handleMessage = async (
       <message>New message from: ${characterId}: ${data}</message>`;
 
     // Use the retry helper to call routeRequest
-    const response = await routeRequestWithRetry(
-      message,
-      createdBy,
-      sessionId,
-      {
+    // const response = await routeRequestWithRetry(
+    //   message,
+    //   createdBy,
+    //   sessionId,
+    //   {
+    //     characterId,
+    //     createdBy,
+    //     sessionId,
+    //     sendersWalletAddress,
+    //     wallets: wallets
+    //       .map((w) => `${w.agent}: ${w.address || null}`)
+    //       .join(", "),
+    //   }
+    // );
+
+      // const message = _event.data
+      const response = await orchestrator.routeRequest(message, createdBy, sessionId, {
         characterId,
         createdBy,
         sessionId,
         sendersWalletAddress,
-        wallets: wallets
-          .map((w) => `${w.agent}: ${w.address || null}`)
-          .join(", "),
-      }
-    );
+        wallets: wallets.map(w => `${w.agent}: ${w.address || null}`).join(', ')
+      });
 
     responseCharacterId = response.metadata.agentName;
     const targetConnection = await getItem<ConnectionItem>(

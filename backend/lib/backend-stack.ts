@@ -138,8 +138,7 @@ export class SonicStack extends cdk.Stack {
       disableExecuteApiEndpoint: false,
     });
 
-    const issuer = "https://innocent-mammoth-97.clerk.accounts.dev"; //changed
-    // const issuer = "https://relevant-bird-25.clerk.accounts.dev"
+    const issuer = "https://many-griffon-15.clerk.accounts.dev";
     const audience = ["aws"];
     const httpApiAuthorizer = new HttpJwtAuthorizer(
       "prodHttpApiAuthorizer",

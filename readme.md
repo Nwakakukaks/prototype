@@ -31,32 +31,26 @@ VersionOne isn’t just for coders. Non-technical users can also bring their ide
 We have built a multi-agent orchestration environment that handles intent routing between 4 specialized agents who work together seamlessly through recursive chat systems:
 
 
-1. ***Risha - The Visionary Architect:***
+1. **Risha – The Product Manager**  
+   **Role:** Risha takes the user’s idea and breaks it down into a Minimum Viable Product (MVP), ensuring that the concept is practical, scalable, and aligned with user expectations.  
+   **Skills:** With an ability to swiftly identify essential features, Risha guarantees that only the most critical components are developed, saving time and resources.
 
-Role: Risha takes the user's idea and breaks it down into an MVP (Minimum Viable Product), ensuring that the concept is practical, scalable, and aligned with user expectations.
+2. **Jaden – The Market Analyst**  
+   **Role:** Jaden monitors ecosystem trends and analyzes market data to provide strategic insights that shape product development.  
+   **Skills:** Leveraging data-driven analysis, Jaden ensures that product decisions are informed by current market dynamics, helping to position the product effectively in a competitive landscape.
 
-Skills: Risha’s ability to quickly identify the core features needed for a product launch ensures no time is wasted on unnecessary features.
+3. **Pearl – The Interface Designer**  
+   **Role:** Once the MVP is defined, Pearl steps in to design the user experience (UX) and interface (UI). She ensures that the product is intuitive, visually appealing, and user-friendly.  
+   **Skills:** Pearl’s meticulous design approach guarantees a seamless interface that not only looks good but also enhances user engagement and accessibility.
 
+4. **Qwen – The Software Engineer**  
+   **Role:** Qwen transforms the MVP into a fully functioning product by integrating it with blockchain technology. He writes secure smart contracts, deploys them, and builds the frontend to connect to the blockchain.  
+   **Skills:** With deep expertise in blockchain development and modern frontend frameworks, Qwen ensures the product is both robust and secure on-chain.
 
-2. ***Pearl - The Designer:***
+5. **Monad – The Growth Expert**  
+   **Role:** Monad drives product adoption by crafting innovative marketing strategies and fostering community engagement.  
+   **Skills:** His creative approach to marketing, combined with a keen understanding of digital engagement, helps generate early traction and buzz around the product.
 
-Role: Once the MVP is defined, Pearl steps in to design the user experience (UX) and interface (UI). She ensures that the product is intuitive, visually appealing, and user-friendly, making sure the idea is not only functional but also accessible to a broad user base.
-
-Skills: Pearl’s eye for detail guarantees a seamless interface that resonates with the target audience.
-
-
-***Qwen - The Smart Contract Engineer:***
-
-Role: Qwen takes the MVP and integrates it with the Sonic blockchain. He writes the necessary smart contracts, deploys them, and ensures the app is fully functional on-chain. This agent brings the product to life within the ecosystem.
-
-Skills: With expertise in blockchain and smart contracts, Qwen ensures secure, efficient, and reliable interactions on the Sonic network.
-
-
-***Mona - The Growth Catalyst:***
-
-Role: Mona focuses on marketing and community building. She crafts engaging social media campaigns, creates content to promote the product, and drives adoption through various promotional efforts.
-
-Skills: Mona’s deep understanding of community engagement ensures the product gains traction early, while her creative skills generate the buzz needed for success.
 
 
 The agents collaborate through recursive chat systems to share knowledge and coordinate actions. For example:
@@ -66,9 +60,9 @@ User Submits Idea: A non-technical or technical user submits their idea to Versi
 
 MVP Creation: Risha builds a functional MVP based on the submitted concept, which is then handed off to Pearl for design.
 
-Smart Contract Integration: Qwen takes the MVP and deploys the necessary smart contracts on the Sonic blockchain, ensuring all functionality works on-chain.
+Smart Contract Integration: Qwen takes the MVP and deploys the necessary smart contracts on the Sonic blockchain, ensuring all functionality works on-chain and creates the nextjs frontend to connect with the deployed contract.
 
-Marketing and Launch: Mona markets the MVP on Pad19, our idea launchpad, where users can interact with the prototype, provide feedback, and rate it ⭐️.
+Marketing and Launch: Monad markets the MVP on Pad19, our idea launchpad, where users can interact with the prototype, provide feedback, and rate it ⭐️.
 
 
 

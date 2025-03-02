@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,6 @@ import {
   ContactRoundIcon,
   BuildingIcon,
 } from "lucide-react";
-import { CustomConnectButton } from "@/components/ConnectButton";
 
 type Status = "In Queue" | "Live";
 
@@ -67,6 +67,7 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
   <div className="bg-white rounded-lg shadow-lg p-6 transition-all hover:shadow-xl">
     <div className="flex items-center justify-between mb-4">
       <img
+      
         src={startup.logo}
         alt={`${startup.name} logo`}
         className="w-12 h-12 rounded-full object-contain"

@@ -89,7 +89,7 @@ export const walletToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is deploying the contract (This will always be Rishi) as he is the one deploying the contract on behalf of the asker.",
+                            description: "The character that is deploying the contract (This will always be Qwen) as he is the one deploying the contract on behalf of the asker.",
                         },
                         network: {
                             type: "string",
@@ -153,7 +153,7 @@ export const walletToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is performing the action. This will always be Rishi.",
+                            description: "The character that is performing the action. This will always be Qwen.",
                         },
                         sessionId: {
                             type: "string",
@@ -172,7 +172,7 @@ export const walletToolDescription = [
     {
         toolSpec: {
             name: "Create_NFT_Tool",
-            description: "Creates and deploys an NFT on Zora given a name and returns the Zurl URL for Yasmin to promote",
+            description: "Creates and deploys an NFT on Zora given a name and returns the Zurl URL for Monad to promote",
             inputSchema: {
                 json: {
                     type: "object",
@@ -353,11 +353,11 @@ export const walletToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is creating the uniswap pool. (This will always be Rishi)",
+                            description: "The character that is creating the uniswap pool. (This will always be Qwen)",
                         },
                         erc20TokenAddress: {
                             type: "string",
-                            description: "The address of the ERC20 token to create the uniswap pool for. This is the token that Rishi would of created with the Deploy_Contract_Tool.",
+                            description: "The address of the ERC20 token to create the uniswap pool for. This is the token that Qwen would of created with the Deploy_Contract_Tool.",
                         },
                         amountTokenDesiredInWei: {
                             type: "string",
