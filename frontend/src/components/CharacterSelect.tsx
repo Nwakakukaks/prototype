@@ -20,7 +20,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCharacterSelect } from "@/contexts/CharacterSelectContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import SkillSelect from "./SkillSelect";
 
@@ -36,15 +35,14 @@ const CHARACTER_PRESETS = [
   {
     id: 0,
     name: "Qwen",
-    skills: ["sonic", "nextjs", "rainbowkit"],
+    skills: ["solidity", "nextjs", "rainbowkit"],
     prompt:
       "I am Qwen, a software engineer specializing in DeFi protocols, NFT marketplaces and frontend development.",
   },
-
   {
     id: 1,
     name: "Jaden",
-    skills: ["twitter, coinmarketgraph"],
+    skills: ["twitter, coinmarketcap"],
     prompt:
       "I am Jaden, a technical analyst with expertise in market trends and product development strategies.",
   },
@@ -58,14 +56,14 @@ const CHARACTER_PRESETS = [
   {
     id: 3,
     name: "Risha",
-    skills: [ "notion", "vercel"],
+    skills: ["notion", "vercel"],
     prompt:
       "I am Risha, a product manager breaking down ideas into practical MVPs with scalable features.",
   },
   {
     id: 4,
     name: "Pearl",
-    skills: ["figma", "canva"],
+    skills: ["canva", "notion"],
     prompt:
       "I am Pearl, an interface designer creating intuitive and visually appealing user experiences.",
   },
@@ -87,9 +85,7 @@ function StyleSelector({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span
-          className={`${pixelify_sans.className} text-blue-900 font-bold text-lg`}
-        >
+        <span className={`${pixelify_sans.className} text-blue-900 font-bold text-lg`}>
           {title}
         </span>
         <div className="flex items-center gap-4 text-black">
@@ -114,33 +110,22 @@ function StyleSelector({
       </div>
       <div className="relative w-full h-[200px] bg-gray-100 rounded-lg overflow-hidden">
         {isLoading ? (
-          <div className="w-full h-full flex flex-col items-center justify-center">
-            <Skeleton className="w-24 h-24 rounded-lg" />
-            <Skeleton className="w-12 h-8 rounded-md" />
+          <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
+            <Skeleton className="w-24 h-24 rounded-full" />
+            <Skeleton className="w-20 h-6 rounded-md mt-2" />
           </div>
         ) : (
-          <div
-            className="absolute top-0 left-0 w-[400%] h-full flex transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(-${current * 25}%)` }}
-          >
-            {CHARACTER_PRESETS.map((char) => (
-              <div
-                key={char.id}
-                className="w-2/4 h-full flex flex-col items-center justify-center bg-gray-200"
-              >
-                <img
-                  src={`/${char.name.toLowerCase()}.jpeg`}
-                  alt={char.name}
-                  className="object-cover rounded-full w-20 h-20"
-                />
-
-                <span
-                  className={`${pixelify_sans.className} mt-2 text-lg text-blue-900 font-bold`}
-                >
-                  {char.name}
-                </span>
-              </div>
-            ))}
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200">
+            <img
+              src={`/${CHARACTER_PRESETS[current].name.toLowerCase()}.jpeg`}
+              alt={CHARACTER_PRESETS[current].name}
+              className="object-cover rounded-full w-24 h-24"
+            />
+            <span
+              className={`${pixelify_sans.className} mt-2 text-lg text-blue-900 font-bold text-center`}
+            >
+              {CHARACTER_PRESETS[current].name}
+            </span>
           </div>
         )}
       </div>
@@ -236,17 +221,12 @@ function CharacterSelect() {
 
           {/* Model Selection */}
           <div>
-            <span
-              className={`${pixelify_sans.className} text-blue-900 font-bold text-lg block mb-2`}
-            >
+            <span className={`${pixelify_sans.className} text-blue-900 font-bold text-lg block mb-2`}>
               Model
             </span>
             <Select value={selected.model} onValueChange={handleModelChange}>
               <SelectTrigger className="text-black">
-                <SelectValue
-                  placeholder="Select a model"
-                  className="text-black"
-                />
+                <SelectValue placeholder="Select a model" className="text-black" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="claude-3.5-sonnet" className="text-black">
@@ -261,9 +241,7 @@ function CharacterSelect() {
 
           {/* Character Prompt */}
           <div>
-            <span
-              className={`${pixelify_sans.className} text-blue-900 font-bold text-lg block mb-2`}
-            >
+            <span className={`${pixelify_sans.className} text-blue-900 font-bold text-lg block mb-2`}>
               Character Prompt
             </span>
             <Input
@@ -276,14 +254,11 @@ function CharacterSelect() {
 
           {/* Skills Selection */}
           <div>
-            <span
-              className={`${pixelify_sans.className} text-blue-900 font-bold text-lg block mb-2`}
-            >
+            <span className={`${pixelify_sans.className} text-blue-900 font-bold text-lg block mb-2`}>
               Skills
             </span>
             <p className="text-sm text-black mb-4">
-              These are {CHARACTER_PRESETS[selected.character].name}&apos;s
-              specialized skills
+              These are {CHARACTER_PRESETS[selected.character].name}&apos;s specialized skills
             </p>
             {isLoading ? (
               <div className="space-y-4">

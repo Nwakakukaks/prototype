@@ -21,20 +21,22 @@ type Skill = {
 };
 
 const availableSkills: Skill[] = [
-  { id: "zora", name: "Zora", color: "bg-purple-500 hover:bg-purple-600" },
-  { id: "uniswap", name: "Uniswap", color: "bg-pink-500 hover:bg-pink-600" },
+  { id: "grok", name: "Grok", color: "bg-red-700 hover:bg-red-800" },
+  { id: "twitter", name: "Twitter", color: "bg-blue-500 hover:bg-blue-600" },
   {
-    id: "tradingview",
-    name: "Trading View",
-    color: "bg-green-500 hover:bg-green-600",
+    id: "rainbowkit",
+    name: "Rainbowkit",
+    color: "bg-yellow-500 hover:bg-yellow-600",
   },
-  { id: "grok", name: "Grok", color: "bg-red-500 hover:bg-red-600" },
-  { id: "twitter", name: "Twitter", color: "bg-blue-400 hover:bg-blue-500" },
-  { id: "cdp", name: "CDP", color: "bg-yellow-500 hover:bg-yellow-600" },
-  { id: "ens", name: "ENS", color: "bg-indigo-500 hover:bg-indigo-600" },
-  { id: "sonic", name: "Sonic", color: "bg-teal-500 hover:bg-teal-600" },
-  // { id: 'electroeum', name: 'Electroeum', color: 'bg-orange-500 hover:bg-orange-600' },
-  { id: "notion", name: "Notion", color: "bg-gray-500 hover:bg-gray-600" },
+  { id: "canva", name: "Canva", color: "bg-navy-500 hover:bg-navy-600" },
+  {
+    id: "coinmarketcap",
+    name: "CoinMarketCap",
+    color: "bg-pink-500 hover:bg-pink-600",
+  },
+  { id: "nextjs", name: "NextJs", color: "bg-indigo-500 hover:bg-indigo-600" },
+  { id: "solity", name: "Solity", color: "bg-teal-500 hover:bg-teal-600" },
+  { id: "notion", name: "Notion", color: "bg-gray-800 hover:bg-gray-900" },
   { id: "vercel", name: "Vercel", color: "bg-slate-500 hover:bg-slate-600" },
 ];
 

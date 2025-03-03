@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // AgentProfiles.tsx
 import React, { useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +22,7 @@ const agents: AgentProfile[] = [
     image:
       "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J31u5aHoiET2fntwWIyQsrmGjJ6oZROuD7HXek",
     description:
-      "Risha takes the user’s idea and transforms it into a practical MVP by breaking it down into essential features that are both scalable and aligned with user expectations.",
+      "Turns dapp ideas into practical MVPs.",
   },
   {
     id: "jaden",
@@ -30,7 +31,7 @@ const agents: AgentProfile[] = [
     image:
       "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J32jiWqfPGQfn9Ea3WU6qAloxJhMLYrZS5sNpv",
     description:
-      "Jaden monitors ecosystem trends and analyzes market data to provide strategic insights, ensuring product development stays ahead of market demands.",
+      "Tracks trends and analyzes data to deliver strategic insights.",
   },
   {
     id: "pearl",
@@ -39,7 +40,7 @@ const agents: AgentProfile[] = [
     image:
       "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3QF1u1vMB4oh9KpZbJwuajRl6c2XWTSfEVm85",
     description:
-      "Pearl designs intuitive and visually appealing user interfaces, ensuring that the product is accessible, engaging, and delivers a seamless user experience.",
+      "Crafts intuitive interfaces for a seamless user experience.",
   },
   {
     id: "qwen",
@@ -48,7 +49,7 @@ const agents: AgentProfile[] = [
     image:
       "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J35IhhsnKJiQOmPLbwU0Y7WR9qa2zjN6CVrdko",
     description:
-      "Qwen brings the MVP to life by integrating it with the Sonic blockchain, developing secure smart contracts, and building the frontend for a seamless on-chain experience.",
+      "Develops secure smart contracts and smooth frontend for on-chain interactions.",
   },
   {
     id: "monad",
@@ -57,7 +58,7 @@ const agents: AgentProfile[] = [
     image:
       "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3P5fcXz1GN2J3xEzatPAmWyqpgcFKwuUrY9jn",
     description:
-      "Monad crafts innovative marketing strategies and community engagement campaigns, driving early product adoption and generating buzz across social channels.",
+      "Drives early adoption with innovative marketing and community engagement.",
   },
 ];
 
@@ -75,7 +76,6 @@ const AgentProfileCard: React.FC<{
         <img
           src={agent.image}
           alt={agent.name}
-    
           className="absolute inset-0 w-full h-full rounded-full object-cover "
         />
       </div>
