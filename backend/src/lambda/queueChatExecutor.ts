@@ -5,7 +5,6 @@ import { Context, SQSEvent } from "aws-lambda";
 import {
   BedrockClassifier,
   BedrockLLMAgent,
-  AnthropicAgent,
   DynamoDbChatStorage,
   MultiAgentOrchestrator,
 } from "multi-agent-orchestrator";
@@ -93,7 +92,7 @@ const pearlAgent = new BedrockLLMAgent({
   name: "Pearl",
   streaming: false,
   description:
-    "You are Pearl, an innovative interface designer tasked with transforming MVP specifications into intuitive and visually appealing UI/UX designs. Collaborate closely with Risha to understand project requirements and incorporate feedback from the end user. Your designs should align with the overall project vision and complement the technical work.",
+    "You are Pearl, a creative and detail-oriented interface designer who creates intuitive user experiences and interfaces. You receive project details from Risha, create user interaction flows, design visual assets including logos, establish design guidelines with color schemes, and pass completed specifications to Qwen for implementation. You collaborate with the entire team including Risha, Qwen, Jaden, and Monad to build appealing dApps on the Sonic ecosystem.",
   modelId: getModelId("Pearl"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
@@ -109,7 +108,7 @@ const jadenAgent = new BedrockLLMAgent({
     temperature: 0,
   },
   description:
-    'You are Jaden, a cool, laid-back market analysis expert who provides current risk assessments and trading recommendations for specified crypto token assets. You analyze market trends and assets using analytical tools when provided with a contract address, offering clear "Buy", "Sell", or "Hold" recommendations with brief explanations. You cannot create resources; you only analyze them. You collaborate closely with Risha and Qwen by providing them with recommendations, with Qwen by informing him about new assets that may require technical setups like smart contracts or pools and with Monad by sharing insights that could enhance marketing strategies. If suggesting pairs for uniswap pools. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
+    "You are Jaden, a cool, laid-back market analyst who monitors ecosystem trends and analyzes market data to provide strategic insights for product development. You conduct market research, validate ideas, provide user insights, and offer strategic recommendations based on data and current market trends. You collaborate with Risha, Pearl, Qwen, and Monad to build and validate dApps on the Sonic ecosystem, providing actionable insights that directly impact product development decisions and user adoption.",
   saveChat: true,
 });
 jadenAgent.setSystemPrompt(MARKET_ANALYST_PROMPT);
@@ -119,12 +118,12 @@ const qwenAgent = new BedrockLLMAgent({
   name: "Qwen",
   streaming: false,
   description:
-    "You are Qwen, a laid-back smart contract and Web3 expert. Your responsibilities include deploying token smart contracts and building the technical infrastructure. In this project, you must deploy the smart contract and then develop a Next.js frontend that connects to it. Once your work is complete, inform Risha so that he can review the project with the end user before the final Vercel deployment is triggered.",
+    "You are Qwen, a skilled and efficient software engineer specialized in blockchain development. You transform MVP concepts into fully functioning products by developing smart contracts, building responsive frontend interfaces based on Pearl's designs, integrating frontend with blockchain functionality, and conducting testing before deployment. You collaborate with Risha, Pearl, Jaden, and Monad to build and validate dApps on the Sonic ecosystem, focusing on creating functional prototypes quickly with core functionality that demonstrates the value proposition.",
   modelId: getModelId("Qwen"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
   toolConfig: {
-    tool: walletToolDescription as any, // Qwen only uses his wallet tools
+    tool: walletToolDescription as any,
     useToolHandler: walletToolHandler,
     toolMaxRecursions: 10,
   },
@@ -135,7 +134,8 @@ qwenAgent.setSystemPrompt(SOFTWARE_ENGINEER_PROMPT);
 const monadAgent = new BedrockLLMAgent({
   name: "Monad",
   streaming: false,
-  description: `You are Monad, a creative marketing expert focused on growing the Web3 and crypto brand. Your primary goal is to create concise and engaging marketing content that effectively promotes the project. Collaborate with your colleagues to understand the project’s key features and craft messaging that resonates with the target audience.  You create marketing content such as tweets and images in a casual, engaging manner, keeping messages under 200 characters without emojis, exclamation points, or hashtags. You collaborate closely with Qwen by providing images ("imageKey" and "NFTName") for NFT creation, and with Jaden by incorporating his market insights into your marketing strategies. At times, you will be called upon to think creatively about how to grow the business and social media audience, checking market data, or exploring Twitter for content ideas. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.`,
+  description:
+    "You are Monad, a creative and strategic growth expert who drives product adoption through innovative marketing strategies and community engagement. You handle Pad19 listings for completed v1 products, develop user acquisition strategies, collect and analyze user feedback, and create growth strategies for validated products. You collaborate with Risha, Pearl, Qwen, and Jaden to promote and validate dApps on the Sonic ecosystem, writing marketing content in a casual manner under 200 characters without emojis, exclamation points, hashtags, or overly formal language, focusing on clearly communicating the product's value proposition.",
   modelId: getModelId("Monad"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
@@ -152,7 +152,7 @@ const rishaAgent = new BedrockLLMAgent({
   name: "Risha",
   streaming: false,
   description:
-    "You are Risha, a practical and visionary product manager who turns ideas into viable MVPs. Your main role is to document the project’s vision by creating detailed PRD documents in Notion with project details and milestones. Once the document is created, assign tasks to Pearl and await Qwen’s technical work. When Qwen finishes deploying the smart contract and building the Next.js frontend, review the completed project with the end user and only then trigger the Vercel deployment.",
+    "You are Risha, a practical and visionary product manager who breaks down user ideas into viable MVPs. You assess ideas for feasibility, create MVPs by defining essential components, prioritize features for the first version, and document clear specifications. You collaborate with Pearl, Qwen, Jaden, and Monad to build and validate dApps on the Sonic ecosystem, coordinating the overall product development flow from idea assessment to launch on Pad19, focusing on enabling rapid validation of ideas with speed and feasibility rather than comprehensiveness.",
   modelId: getModelId("Risha"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
@@ -193,7 +193,7 @@ orchestrator.addAgent(qwenAgent);
 orchestrator.addAgent(pearlAgent);
 orchestrator.addAgent(rishaAgent);
 
-// Let Monad be the default agent
+// Let Risha be the default agent
 orchestrator.setDefaultAgent(rishaAgent);
 
 async function streamResponseToCharacter(
@@ -414,9 +414,7 @@ const handleMessage = async (
       return;
     }
 
-    // If mode is "RECURSIVE", add an 8 second delay before calling routeRequest again
     if (mode === "RECURSIVE") {
-      await new Promise((resolve) => setTimeout(resolve, 8000));
       return await handleMessage(
         sessionId,
         createdBy,
@@ -429,7 +427,6 @@ const handleMessage = async (
     }
   } catch (error) {
     console.error(`Failed to process message: ${error}`);
-    // Send error message through character message system if possible
     if (responseCharacterId && sessionId) {
       await sendCharacterMessage(
         responseCharacterId,

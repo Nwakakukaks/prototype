@@ -36,7 +36,7 @@ const CHARACTER_PRESETS = [
   {
     id: 0,
     name: "Qwen",
-    skills: ["cdp", "zora", "ens"],
+    skills: ["sonic", "nextjs", "rainbowkit"],
     prompt:
       "I am Qwen, a software engineer specializing in DeFi protocols, NFT marketplaces and frontend development.",
   },
@@ -44,7 +44,7 @@ const CHARACTER_PRESETS = [
   {
     id: 1,
     name: "Jaden",
-    skills: ["tradingview"],
+    skills: ["twitter, coinmarketgraph"],
     prompt:
       "I am Jaden, a technical analyst with expertise in market trends and product development strategies.",
   },
@@ -58,7 +58,7 @@ const CHARACTER_PRESETS = [
   {
     id: 3,
     name: "Risha",
-    skills: ["figma", "notion", "vercel"],
+    skills: [ "notion", "vercel"],
     prompt:
       "I am Risha, a product manager breaking down ideas into practical MVPs with scalable features.",
   },
@@ -114,8 +114,9 @@ function StyleSelector({
       </div>
       <div className="relative w-full h-[200px] bg-gray-100 rounded-lg overflow-hidden">
         {isLoading ? (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex flex-col items-center justify-center">
             <Skeleton className="w-24 h-24 rounded-lg" />
+            <Skeleton className="w-12 h-8 rounded-md" />
           </div>
         ) : (
           <div
@@ -125,15 +126,14 @@ function StyleSelector({
             {CHARACTER_PRESETS.map((char) => (
               <div
                 key={char.id}
-                className="w-1/4 h-full flex flex-col items-center justify-center bg-gray-200"
+                className="w-2/4 h-full flex flex-col items-center justify-center bg-gray-200"
               >
-                <div className="relative w-20 h-20">
-                  <img
-                    src={`/${char.name.toLowerCase()}.jpeg`}
-                    alt={char.name}
-                    className="object-contain"
-                  />
-                </div>
+                <img
+                  src={`/${char.name.toLowerCase()}.jpeg`}
+                  alt={char.name}
+                  className="object-cover rounded-full w-20 h-20"
+                />
+
                 <span
                   className={`${pixelify_sans.className} mt-2 text-lg text-blue-900 font-bold`}
                 >
