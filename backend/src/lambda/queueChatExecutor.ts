@@ -13,10 +13,10 @@ import { ConnectionItem, logConsole, sendCharacterMessage } from "../utils";
 import { createItem, getItem } from "./dynamo_v3";
 import { CharacterWallet } from "./tools/handlers/create-wallet-handler";
 import {
-  ADMIN_PROMPT,
+  SOFTWARE_ENGINEER_PROMPT,
   INTERFACE_DESIGNER_PROMPT,
   MARKET_ANALYST_PROMPT,
-  MARKETING_PROMPT,
+  GROWTH_EXPERT_PROMPT,
   PRODUCT_MANAGER_PROMPT,
 } from "./tools/persona";
 import {
@@ -30,12 +30,6 @@ import {
   projectToolDescriptions,
   projectToolHandler,
 } from "./tools/project-tool";
-
-logConsole.info("ANTHROPIC_API_KEY:", process.env.ANTHROPIC_API_KEY);
-
-const anthropicClient = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -107,7 +101,7 @@ const pearlAgent = new BedrockLLMAgent({
 pearlAgent.setSystemPrompt(INTERFACE_DESIGNER_PROMPT);
 
 // Jaden Agent
-const jadenAgent = new AnthropicAgent({
+const jadenAgent = new BedrockLLMAgent({
   name: "Jaden",
   streaming: false,
   modelId: getModelId("Jaden"),
@@ -115,9 +109,8 @@ const jadenAgent = new AnthropicAgent({
     temperature: 0,
   },
   description:
-    'You are Jaden, a cool, laid-back market analysis expert who provides current risk assessments and trading recommendations for specified crypto token assets. You analyze market trends and assets using analytical tools when provided with a contract address, offering clear "Buy", "Sell", or "Hold" recommendations with brief explanations. You cannot create resources; you only analyze them. You collaborate closely with Harper and Qwen by providing them with recommendations, with Qwen by informing him about new assets that may require technical setups like smart contracts or pools and with Monad by sharing insights that could enhance marketing strategies. If suggesting pairs for uniswap pools. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
+    'You are Jaden, a cool, laid-back market analysis expert who provides current risk assessments and trading recommendations for specified crypto token assets. You analyze market trends and assets using analytical tools when provided with a contract address, offering clear "Buy", "Sell", or "Hold" recommendations with brief explanations. You cannot create resources; you only analyze them. You collaborate closely with Risha and Qwen by providing them with recommendations, with Qwen by informing him about new assets that may require technical setups like smart contracts or pools and with Monad by sharing insights that could enhance marketing strategies. If suggesting pairs for uniswap pools. Lean on your colleagues for help when needed, and always communicate with them by name to coordinate tasks effectively.',
   saveChat: true,
-  client: anthropicClient,
 });
 jadenAgent.setSystemPrompt(MARKET_ANALYST_PROMPT);
 
@@ -136,7 +129,7 @@ const qwenAgent = new BedrockLLMAgent({
     toolMaxRecursions: 10,
   },
 });
-qwenAgent.setSystemPrompt(ADMIN_PROMPT);
+qwenAgent.setSystemPrompt(SOFTWARE_ENGINEER_PROMPT);
 
 // Monad Agent (Marketing Expert)
 const monadAgent = new BedrockLLMAgent({
@@ -152,7 +145,7 @@ const monadAgent = new BedrockLLMAgent({
     toolMaxRecursions: 10,
   },
 });
-monadAgent.setSystemPrompt(MARKETING_PROMPT);
+monadAgent.setSystemPrompt(GROWTH_EXPERT_PROMPT);
 
 // Risha Agent (Product Manager)
 const rishaAgent = new BedrockLLMAgent({
@@ -202,50 +195,6 @@ orchestrator.addAgent(rishaAgent);
 
 // Let Monad be the default agent
 orchestrator.setDefaultAgent(rishaAgent);
-
-
-async function routeRequestWithRetry(
-  message: string,
-  createdBy: string,
-  sessionId: string,
-  additionalParams: any,
-  maxAttempts = 3,
-  baseDelay = 1000
-): Promise<any> {
-  let attempt = 0;
-  let delayTime = baseDelay;
-  while (attempt < maxAttempts) {
-    try {
-      return await orchestrator.routeRequest(
-        message,
-        createdBy,
-        sessionId,
-        additionalParams
-      );
-    } catch (error: any) {
-      // Check for throttling errors (HTTP 429)
-      if (
-        error.name === "ThrottlingException" ||
-        error.$metadata?.httpStatusCode === 429
-      ) {
-        attempt++;
-        if (attempt >= maxAttempts) {
-          throw error;
-        }
-        const jitter = Math.floor(Math.random() * 500); // up to 500ms of jitter
-        const waitTime = delayTime + jitter;
-        logConsole.info(
-          `Throttling detected. Retrying attempt ${attempt} after ${waitTime} ms...`
-        );
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
-        delayTime *= 2; // exponential backoff
-      } else {
-        throw error;
-      }
-    }
-  }
-  throw new Error("Max retry attempts reached");
-}
 
 async function streamResponseToCharacter(
   characterId: string,
@@ -315,7 +264,6 @@ const handleMessage = async (
           "Important: If a message starts with 'Hey <Agent Name>,' ensure you route the message to the Agent specified as <Agent Name>.",
       }
     );
-    logConsole.info("Agents:", JSON.stringify(agents, null, 2));
 
     const unixTimestampInMillis = Math.floor(Date.now());
     const messageObject = {
@@ -350,7 +298,6 @@ const handleMessage = async (
         address: wallet?.walletAddress,
       });
     }
-    logConsole.info("Wallets:", JSON.stringify(wallets, null, 2));
 
     const message = `
       <metadata>
@@ -379,14 +326,21 @@ const handleMessage = async (
     //   }
     // );
 
-      // const message = _event.data
-      const response = await orchestrator.routeRequest(message, createdBy, sessionId, {
+    // const message = _event.data
+    const response = await orchestrator.routeRequest(
+      message,
+      createdBy,
+      sessionId,
+      {
         characterId,
         createdBy,
         sessionId,
         sendersWalletAddress,
-        wallets: wallets.map(w => `${w.agent}: ${w.address || null}`).join(', ')
-      });
+        wallets: wallets
+          .map((w) => `${w.agent}: ${w.address || null}`)
+          .join(", "),
+      }
+    );
 
     responseCharacterId = response.metadata.agentName;
     const targetConnection = await getItem<ConnectionItem>(

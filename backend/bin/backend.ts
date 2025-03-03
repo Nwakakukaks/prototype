@@ -10,6 +10,6 @@ const app = new cdk.App();
 new SonicStack(app, 'SonicStack', {
   env: {
     account: account,
-    region: 'sa-east-1',
+    region: 'us-east-1',
   }
 });

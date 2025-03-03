@@ -229,6 +229,11 @@ export class SonicStack extends cdk.Stack {
 
       // SQS
       SQS_QUEUE_URL: chatQueue.queueUrl,
+
+      NOTION_TOKEN: process.env.NOTION_TOKEN as string,
+      VERCEL_TOKEN: process.env.VERCEL_TOKEN as string,
+      NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID as string,
+      GITHUB_TOKEN: process.env.GITHUB_TOKEN as string,
     };
 
     const apiHandler = new NodejsFunction(this, "APIHandler", {
