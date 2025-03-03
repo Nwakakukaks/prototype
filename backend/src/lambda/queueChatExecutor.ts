@@ -65,7 +65,7 @@ const getModelId = (agentName: string) => {
 export default getModelId;
 
 const recursiveOptions = {
-  maxRecursions: 3,
+  maxRecursions: 10,
 };
 
 export interface InvokeModelPayload {

@@ -15,6 +15,10 @@ export async function createNotionProjectDoc(inputData: {
   sessionId: string;
 }) {
   try {
+    const milestonesText = inputData.milestones
+      .map((ms) => `• ${ms}`)
+      .join("\n");
+
     const payload = {
       parent: { database_id: process.env.NOTION_DATABASE_ID },
       properties: {
@@ -36,27 +40,32 @@ export async function createNotionProjectDoc(inputData: {
             },
           ],
         },
-        // Assuming the database has a multi-select property called "Milestones"
         Milestones: {
-          multi_select: inputData.milestones.map((ms) => ({ name: ms })),
+          rich_text: [
+            {
+              text: {
+                content: milestonesText,
+              },
+            },
+          ],
         },
       },
-      children: [
-        {
-          object: "block",
-          type: "heading_2",
-          heading_2: {
-            text: [{ type: "text", text: { content: "Project Overview" } }],
-          },
-        },
-        {
-          object: "block",
-          type: "paragraph",
-          paragraph: {
-            text: [{ type: "text", text: { content: inputData.description } }],
-          },
-        },
-      ],
+      // children: [
+      //   {
+      //     object: "block",
+      //     type: "heading_2",
+      //     heading_2: {
+      //       text: [{ type: "text", text: { content: "Project Overview" } }],
+      //     },
+      //   },
+      //   {
+      //     object: "block",
+      //     type: "paragraph",
+      //     paragraph: {
+      //       text: [{ type: "text", text: { content: inputData.description } }],
+      //     },
+      //   },
+      // ],
     };
 
     const response = await axios.post(
