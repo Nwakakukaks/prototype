@@ -28,10 +28,10 @@ const availableSkills: Skill[] = [
     name: "Rainbowkit",
     color: "bg-yellow-500 hover:bg-yellow-600",
   },
-  { id: "canva", name: "Canva", color: "bg-navy-500 hover:bg-navy-600" },
+  { id: "canva", name: "Canva", color: "bg-blue-700 hover:bg-blue-800" },
   {
-    id: "coinmarketcap",
-    name: "CoinMarketCap",
+    id: "defiant",
+    name: "Defiant",
     color: "bg-pink-500 hover:bg-pink-600",
   },
   { id: "nextjs", name: "NextJs", color: "bg-indigo-500 hover:bg-indigo-600" },

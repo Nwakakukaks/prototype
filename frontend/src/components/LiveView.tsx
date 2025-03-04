@@ -8,15 +8,34 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CircleAlertIcon, Code, Eye, Loader2, RadioTowerIcon } from "lucide-react";
+import {
+  CircleAlertIcon,
+  Code,
+  Eye,
+  Loader2,
+  RadioTowerIcon,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { pixelify_sans } from "@/app/fonts";
+import NotificationBoard from "./NotificationBoard";
+import {CodeEditor, CodePreview} from "./QwenCoder";
 
-const LiveView = ({ animateRadio }: { animateRadio: boolean }) => {
+interface liveProps {
+  animateRadio: boolean;
+  notifications: any[];
+}
+
+const LiveView = ({ animateRadio, notifications }: liveProps) => {
   const [open, setOpen] = useState(false);
   const [activeSession, setActiveSession] = useState(true);
   const [code, setCode] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [currentTab, setCurrentTab] = useState("editor");
+  const [currentTab, setCurrentTab] = useState("notifications");
+  const [codeSnippets, setCodeSnippets] = useState({
+    main: '',
+    landing: '',
+    header: ''
+  });
 
   // Simulate AI typing
   const simulateAiTyping = () => {
@@ -64,23 +83,27 @@ for (let i = 0; i < 10; i++) {
         <RadioTowerIcon
           size={22}
           className={`mt-2 ${
-            animateRadio ? "text-green-600 animate-pulse" : "text-gray-500"
+            animateRadio ? "text-green-500 animate-pulse" : "text-gray-500"
           }`}
         />
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-2xl bg-card/90">
+        <DialogHeader>
+          <DialogTitle></DialogTitle>
+        </DialogHeader>
+        <DialogContent
+          className={`${pixelify_sans.className} sm:max-w-3xl bg-gray-950 border border-gray-400 max-h-[80vh] scrollbar-hide overflow-y-auto`}
+        >
           {!activeSession ? (
             <div className="flex flex-col items-center justify-center space-y-4 py-12">
               <div className="text-center text-muted-foreground">
                 <Code size={48} className="mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-semibold">No Active Session</h3>
-                <p className="mt-2">
-                  Start a new session agent assistance.
+                <p className="mt-2 text-sm">
+                  Begin chat with agents to initiate a new live session.
                 </p>
               </div>
-              <Button onClick={startSession}>Start New Session</Button>
             </div>
           ) : (
             <div className="space-y-4">
@@ -90,89 +113,41 @@ for (let i = 0; i < 10; i++) {
                 className="w-full"
               >
                 <div className="flex items-center justify-between">
-                  <TabsList>
-                    <TabsTrigger value="notifications" className="flex items-center">
+                  <TabsList className="w-full flex">
+                    <TabsTrigger
+                      value="notifications"
+                      className="flex-1 text-center"
+                    >
                       <CircleAlertIcon className="mr-2 h-4 w-4" />
                       Notifications
                     </TabsTrigger>
-                    <TabsTrigger value="editor" className="flex items-center">
+                    <TabsTrigger
+                      value="editor"
+                      className="flex-1 text-center"
+                    >
                       <Code className="mr-2 h-4 w-4" />
-                      Editor
+                      Live Coder
                     </TabsTrigger>
-                    <TabsTrigger value="preview" className="flex items-center">
+                    <TabsTrigger
+                      value="preview"
+                      className="flex-1 text-center"
+                    >
                       <Eye className="mr-2 h-4 w-4" />
-                      Preview
+                      Preview Project
                     </TabsTrigger>
                   </TabsList>
-                  <Button variant="destructive" size="sm" onClick={endSession}>
-                    Close
-                  </Button>
                 </div>
 
                 <TabsContent value="notifications" className="mt-4">
-                  <Card>
-                    <CardContent className="p-0">
-                      <div className="relative">
-                        {isTyping && (
-                          <div className="absolute top-2 right-2 flex items-center text-xs text-muted-foreground">
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                            AI writing code...
-                          </div>
-                        )}
-                        <pre className="relative h-64 overflow-auto rounded bg-black p-4 text-sm text-white">
-                          <code>{code}</code>
-                        </pre>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <NotificationBoard notifications={notifications} />
                 </TabsContent>
 
                 <TabsContent value="editor" className="mt-4">
-                  <Card>
-                    <CardContent className="p-0">
-                      <div className="relative">
-                        {isTyping && (
-                          <div className="absolute top-2 right-2 flex items-center text-xs text-muted-foreground">
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                            AI writing code...
-                          </div>
-                        )}
-                        <pre className="relative h-64 overflow-auto rounded bg-black p-4 text-sm text-white">
-                          <code>{code}</code>
-                        </pre>
-                      </div>
-                    </CardContent>
-                  </Card>
+                <CodeEditor />
                 </TabsContent>
 
                 <TabsContent value="preview" className="mt-4">
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="h-64 overflow-auto rounded border bg-white p-4">
-                        <div className="space-y-2 text-sm">
-                          <p className="font-mono">Output:</p>
-                          {code && !isTyping ? (
-                            <div className="font-mono">
-                              <p>0</p>
-                              <p>1</p>
-                              <p>1</p>
-                              <p>2</p>
-                              <p>3</p>
-                              <p>5</p>
-                              <p>8</p>
-                              <p>13</p>
-                              <p>21</p>
-                              <p>34</p>
-                            </div>
-                          ) : (
-                            <p className="text-muted-foreground">
-                              Waiting for code execution...
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                <CodePreview codeSnippets={codeSnippets} /> 
                 </TabsContent>
               </Tabs>
             </div>

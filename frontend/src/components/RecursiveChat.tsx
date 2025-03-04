@@ -98,7 +98,7 @@ const GameControlPanel = ({
             onClick={toggleCollapse}
           >
             <div className="space-y-1 ">
-              <CardTitle className="text-gray-200">Game Controls</CardTitle>
+              <CardTitle className="text-gray-200">App Controls</CardTitle>
               <CardDescription className="text-gray-400">
                 Manage chat mode and audio settings
               </CardDescription>

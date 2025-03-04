@@ -50,7 +50,7 @@ export default function RootLayout({
               <CharacterSelectProvider>
                 <CharacterSelect />
                 <div className="text-sm p-1 text-center bg-orange-50 text-gray-900">
-                  We're lauching soon on product hunt. Please support by leaving
+                  We&apos;re launching soon on product hunt! Please support by leaving
                   us an upvote 🙏
                 </div>
                

@@ -355,6 +355,7 @@ const Game = ({
             messages={chatMessages}
             onSendMessage={handleGlobalMessage}
             disabled={!isInitialized}
+            notifications={notifications}
           />
         </div>
       </div>
@@ -366,6 +367,7 @@ const Game = ({
           messages={chatMessages}
           onSendMessage={handleGlobalMessage}
           disabled={!isInitialized}
+          notifications={notifications}
         />
         <NotificationBoard notifications={notifications} />
       </div>

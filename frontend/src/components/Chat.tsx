@@ -13,6 +13,7 @@ interface ChatMessage {
   timestamp: Date;
   address?: string;
   characterName: string;
+  
 }
 
 interface ChatProps {
@@ -20,6 +21,7 @@ interface ChatProps {
   chatMode: "STANDARD" | "RECURSIVE" | "VOICE";
   onSendMessage: (message: string) => void;
   disabled?: boolean;
+  notifications: any[];
 }
 
 const characterColors: { [key: string]: string } = {
@@ -37,6 +39,7 @@ const Chat = ({
   onSendMessage,
   disabled = false,
   chatMode,
+  notifications,
 }: ChatProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -99,7 +102,7 @@ const Chat = ({
         </div>
         <div
           ref={chatContainerRef}
-          className={`overflow-y-auto p-4 space-y-4 flex-1 transition-all duration-300 ${
+          className={`overflow-y-auto scrollbar-hide p-4 space-y-4 flex-1 transition-all duration-300 ${
             isExpanded ? "h-[calc(100vh-8rem)]" : "h-0 md:h-[calc(100%-8rem)]"
           } ${!isExpanded && "md:opacity-100 opacity-0"}`}
         >
@@ -141,7 +144,7 @@ const Chat = ({
 
         <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
           <div className="flex gap-2 items-center ">
-            <LiveView animateRadio={animateRadio}/>
+            <LiveView animateRadio={animateRadio} notifications={notifications}/>
             <input
               type="text"
               value={message}
