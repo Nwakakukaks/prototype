@@ -37,7 +37,7 @@ interface IncomingMessage {
   sendersWalletAddress: string;
   maxLength: string;
   topP: string;
-  chatMode: "STANDARD" | "RECURSIVE";
+  chatMode: "STANDARD" | "RECURSIVE" | "VOICE";
 }
 
 
@@ -54,7 +54,7 @@ interface InvokeModelPayload {
   topP: string,
   connectionId: string,
   data: string,
-  chatMode: "STANDARD" | "RECURSIVE";
+  chatMode: "STANDARD" | "RECURSIVE" | "VOICE";
 }
 
 export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {

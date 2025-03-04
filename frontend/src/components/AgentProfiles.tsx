@@ -65,9 +65,9 @@ const agents: AgentProfile[] = [
 const AgentProfileCard: React.FC<{
   agent: AgentProfile;
   onClick: (agent: AgentProfile) => void;
-}> = ({ agent, onClick }) => (
+}> = ({ agent, onClick }) => ( 
   <Card
-    className="flex-none relative w-96 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card/80"
+    className="flex-none relative w-96 border border-gray-400 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-gray-950"
     onClick={() => onClick(agent)}
   >
     <CardContent className="p-4 flex items-center gap-4">
@@ -80,9 +80,9 @@ const AgentProfileCard: React.FC<{
         />
       </div>
       <div className="flex-1">
-        <h3 className="font-semibold text-lg text-gray-800">{agent.name}</h3>
+        <h3 className="font-semibold text-lg text-gray-100">{agent.name}</h3>
         <p className="text-orange-600 text-sm font-medium mb-1">{agent.role}</p>
-        <p className="text-gray-600 text-sm line-clamp-2">
+        <p className="text-gray-400 text-sm line-clamp-2">
           {agent.description}
         </p>
       </div>

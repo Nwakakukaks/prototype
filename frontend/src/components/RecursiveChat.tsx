@@ -30,8 +30,8 @@ import { useSendTransaction } from "wagmi";
 import { cn } from "@/lib/utils";
 
 interface GameControlPanelProps {
-  chatMode: "STANDARD" | "RECURSIVE";
-  setChatMode: (mode: "STANDARD" | "RECURSIVE") => void;
+  chatMode: "STANDARD" | "RECURSIVE" | "VOICE";
+  setChatMode: (mode: "STANDARD" | "RECURSIVE" | "VOICE") => void;
   notifications: any[];
 }
 
@@ -92,14 +92,14 @@ const GameControlPanel = ({
   return (
     <div className={`${pixelify_sans.className} flex gap-4 w-full`}>
       <div className="flex-1">
-        <Card className="bg-card/80 mb-4 transition-all duration-300">
+        <Card className="bg-gray-950 border border-gray-400 mb-4 transition-all duration-300">
           <CardHeader
             className="flex flex-row items-center justify-between pb-2 cursor-pointer"
             onClick={toggleCollapse}
           >
-            <div className="space-y-1">
-              <CardTitle>Game Controls</CardTitle>
-              <CardDescription>
+            <div className="space-y-1 ">
+              <CardTitle className="text-gray-200">Game Controls</CardTitle>
+              <CardDescription className="text-gray-400">
                 Manage chat mode and audio settings
               </CardDescription>
             </div>
@@ -120,8 +120,8 @@ const GameControlPanel = ({
           >
             <CardContent className="space-y-6 pt-2">
               {/* Chat Mode Controls */}
-              <div className="space-y-2">
-                <p className="font-semibold text-sm">Chat Mode</p>
+              <div className="space-y-2 text-gray-300">
+                <p className="font-semibold text-sm text-gray-300">Chat Mode</p>
                 <Select value={chatMode} onValueChange={setChatMode}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select chat mode" />
@@ -140,12 +140,26 @@ const GameControlPanel = ({
                         loop
                       </span>
                     </SelectItem>
+                    <SelectItem value="VOICE">
+                      <div className="relative">
+                        {/* Experimental Badge */}
+                        <span className="absolute bottom-4 right-28 mr-2 bg-blue-600 text-white text-[10px] font-semibold px-2 rounded-full">
+                          beta
+                        </span>
+                        <div className="flex flex-col">
+                          <span>Voice Mode</span>
+                          <span className="block text-xs text-muted-foreground">
+                            Control and interact with agents with voice
+                          </span>
+                        </div>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Audio Controls */}
-              <div className="space-y-4">
+              <div className="space-y-4 text-gray-300">
                 <p className="font-semibold text-sm">Audio Settings</p>
 
                 {/* Background Music Controls */}
@@ -173,7 +187,6 @@ const GameControlPanel = ({
                           className="data-[disabled]:opacity-50"
                         />
                       </div>
-                 
                     </div>
                   </div>
                 </div>

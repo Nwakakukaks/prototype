@@ -37,7 +37,7 @@ const Game = ({
   // State variables
   const [isInitialized, setIsInitialized] = useState(false);
   const [playerStates, setPlayerStates] = useState<PlayerState[]>([]);
-  const [chatMode, setChatMode] = useState<"STANDARD" | "RECURSIVE">(
+  const [chatMode, setChatMode] = useState<"STANDARD" | "RECURSIVE" | "VOICE">(
     "STANDARD"
   );
   const [notifications, setNotifications] = useState<any[]>([]);
