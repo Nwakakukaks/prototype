@@ -44,8 +44,9 @@ export const projectToolDescriptions = [
             },
             characterId: {
               type: "string",
-              description: "The character that is performing the action. This will always be Risha.",
-          },
+              description:
+                "The character that is performing the action. This will always be Risha.",
+            },
             sessionId: {
               type: "string",
               description: "Session ID for the current conversation.",
@@ -90,8 +91,9 @@ export const projectToolDescriptions = [
             },
             characterId: {
               type: "string",
-              description: "The character that is performing the action. This will always be Risha.",
-          },
+              description:
+                "The character that is performing the action. This will always be Risha.",
+            },
             sessionId: {
               type: "string",
               description: "Session ID for the current conversation.",
@@ -124,14 +126,18 @@ export const projectToolDescriptions = [
               type: "string",
               description: "Project description and details.",
             },
-            
+            logo: {
+              type: "string",
+              description: "logo url for the project.",
+            },
             link: {
               type: "string",
               description: "URL for the project website.",
             },
             requester: {
               type: "string",
-              description: "The wallet address of user performing the action (e.g., 'Ox36..374')",
+              description:
+                "The wallet address of user performing the action (e.g., 'Ox36..374')",
             },
             users: {
               type: "string",
@@ -143,7 +149,7 @@ export const projectToolDescriptions = [
             },
             launchedAt: {
               type: "string",
-              description: "Launch date or relative time (e.g., '2d ago').",
+              description: "Launch date or relative time (e.g., '2d ago'), default to the current date and time.",
             },
             status: {
               type: "string",
@@ -155,11 +161,11 @@ export const projectToolDescriptions = [
               properties: {
                 dau: {
                   type: "string",
-                  description: "Daily active users.",
+                  description: "Daily active users. default to 0",
                 },
                 revenue: {
                   type: "string",
-                  description: "24h revenue.",
+                  description: "24h revenue. default to 0",
                 },
               },
               required: ["dau", "revenue"],
@@ -170,8 +176,9 @@ export const projectToolDescriptions = [
             },
             characterId: {
               type: "string",
-              description: "The character that is performing the action. This will always be Risha.",
-          },
+              description:
+                "The character that is performing the action. This will always be Risha.",
+            },
             sessionId: {
               type: "string",
               description: "Session ID for the current conversation.",
@@ -233,9 +240,9 @@ export async function projectToolHandler(
           case "Publish_Vercel_Project_Tool":
             result = await publishProjectOnVercel(toolUse.input);
             break;
-            case "create_pad19_listing":
-              result = await createPad19Listing(toolUse.input);
-              break;
+          case "create_pad19_listing":
+            result = await createPad19Listing(toolUse.input);
+            break;
           default:
             logConsole.warn(`Tool ${toolUse.name} not found`);
             return null;

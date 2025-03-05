@@ -31,7 +31,7 @@ export async function createPad19Listing(inputData: {
       inputData.characterId,
       inputData.sessionId,
       docClient,
-      `listing our project on pad19, one second...`
+      `listing project on pad19, one second...`
     );
 
     const supabaseUrl = process.env.SUPABASE_URL;
