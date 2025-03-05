@@ -56,13 +56,13 @@ export async function createPad19Listing(inputData: {
       createdAt: new Date().toISOString(),
       eventName: "listed_on_pad19",
       metadata: {
-        url: response.data,
+        Pad19_link: 'http:localhost:3000/pad19', // change to live link 
       },
     });
 
     return {
       message: "Pad19 listing created successfully",
-      data: response.data,
+      data: 'http:localhost:3000/pad19',
     };
   } catch (error: any) {
     logConsole.error("Error creating Pad19 listing:", error);

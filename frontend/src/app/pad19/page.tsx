@@ -14,6 +14,7 @@ import {
   Link2Icon,
   ContactRoundIcon,
   BuildingIcon,
+  Loader2,
 } from "lucide-react";
 
 type Status = "In Queue" | "Live";
@@ -53,6 +54,7 @@ export interface Startup {
   users: string;
   stars: number;
   launchedAt: string;
+  created_at: string;
   status: Status;
   metrics: Metrics;
 }
@@ -73,19 +75,28 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
     </div>
 
     <h3 className="text-xl font-bold text-gray-800 mb-2">{startup.name}</h3>
-    <p className="text-gray-600 mb-4 line-clamp-2">{startup.description}</p>
+    <p className="text-gray-600 mb-4 line-clamp-3">{startup.description}</p>
 
-    <div className="flex items-center gap-3 mb-3">
+    <div className="flex items-center gap-4 mb-3">
       <div className="flex items-center gap-2">
         <Link2Icon size={16} className="text-gray-600" />
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href={startup.link}
-          className="text-sm text-blue-500 truncate font-medium underline min-w-0 cursor-pointer"
-        >
-          {startup.link}
-        </a>
+        {startup.status === "In Queue" ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-blue-600 underline">
+              awaiting deployment
+            </span>
+            <Loader2 size={16} className="animate-spin text-gray-600" />
+          </div>
+        ) : (
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={startup.link}
+            className="text-sm text-blue-500 truncate font-medium underline min-w-0 cursor-pointer"
+          >
+            {startup.link}
+          </a>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <BuildingIcon size={16} className="text-gray-600" />
@@ -103,14 +114,14 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
         </div>
       </div>
       <div className="bg-gray-50 p-3 rounded-lg">
-        <div className="text-sm text-gray-500">Revenue (24h)</div>
+        <div className="text-sm text-gray-500">Revenue (AT)</div>
         <div className="text-lg font-bold text-gray-800">
           ${startup.metrics.revenue}
         </div>
       </div>
     </div>
 
-    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+    <div className="flex items-center justify-between pt-4 px-4 border-t border-gray-100">
       <div className="flex items-center gap-1">
         <Users size={16} className="text-orange-500" />
         <span className="text-sm font-medium text-gray-600">
@@ -125,7 +136,15 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
       </div>
       <div className="flex items-center gap-1">
         <Calendar size={16} className="text-gray-500" />
-        <span className="text-sm text-gray-600">{startup.launchedAt}</span>
+        <span className="text-sm text-gray-600 font-medium">
+          {new Date(startup.created_at).toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          })}
+        </span>
       </div>
     </div>
   </div>

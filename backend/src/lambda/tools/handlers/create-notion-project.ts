@@ -89,14 +89,12 @@ export async function createNotionProjectDoc(inputData: {
       createdAt: new Date().toISOString(),
       eventName: "prd_created",
       metadata: {
-        id: response.data.id,
-        url: response.data.url,
+        Notion_doc: response.data.url,
       },
     });
 
     return {
       message: "Notion project document created successfully",
-      pageId: response.data.id,
       pageUrl: response.data.url || null,
     };
   } catch (error: any) {

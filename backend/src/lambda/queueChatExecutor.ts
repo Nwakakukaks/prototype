@@ -379,16 +379,16 @@ const handleMessage = async (
     );
 
     if (targetConnection) {
-      logConsole.info(`> Agent ID: ${response.metadata.agentId}`);
-      logConsole.info(`> Agent Name: ${response.metadata.agentName}`);
-      logConsole.info(`> User Input: ${response.metadata.userInput}`);
-      logConsole.info(`> User ID: ${response.metadata.userId}`);
-      logConsole.info(`> Session ID: ${response.metadata.sessionId}`);
-      logConsole.info(
-        `> Additional Parameters:`,
-        response.metadata.additionalParams
-      );
-      logConsole.info(`\n> Response: ${JSON.stringify(response)}`);
+      // logConsole.info(`> Agent ID: ${response.metadata.agentId}`);
+      // logConsole.info(`> Agent Name: ${response.metadata.agentName}`);
+      // logConsole.info(`> User Input: ${response.metadata.userInput}`);
+      // logConsole.info(`> User ID: ${response.metadata.userId}`);
+      // logConsole.info(`> Session ID: ${response.metadata.sessionId}`);
+      // logConsole.info(
+      //   `> Additional Parameters:`,
+      //   response.metadata.additionalParams
+      // );
+      // logConsole.info(`\n> Response: ${JSON.stringify(response)}`);
 
       if (response.streaming === true) {
         logConsole.info("\n** RESPONSE STREAMING ** \n");

@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { pixelify_sans } from "@/app/fonts";
 import { truncateAddress } from "@/utils/formatters";
 import { Name } from "@coinbase/onchainkit/identity";
 import Image from "next/image";
@@ -143,13 +144,13 @@ const Notification = ({
       case "tweet_created":
         return `https://x.com/i/${metadata.tweetId}`;
       case "prd_created":
-        return `${metadata.url}`;
+        return `${metadata.Notion_doc}`;
       case "vercel_deployment":
-        return `${metadata.projectUrl}`;
+        return `${metadata.live_link}`;
       case "repo_created":
-        return `${metadata.repoUrl}`;
+        return `${metadata.github_repo}`;
       case "listed_on_pad19":
-        return `http://${window.location}/pad19`; // change to deployment url
+        return `http://localhost:3000/pad19`; // change to deployment url
       default:
         return null;
     }
@@ -215,7 +216,11 @@ const Notification = ({
 
         {/* Metadata */}
         {metadata && (
-          <div className="mt-1 p-2 rounded-md bg-muted/50 text-xs font-mono w-full text-black">
+          <div
+            className={`mt-1 p-2 rounded-md bg-muted/50 text-xs font-mono w-full text-white ${
+              pixelify_sans.className
+            }  font-medium ${eventName ? getEventTagClass(eventName) : ""}`}
+          >
             {eventName === "image_created" && metadata.url && (
               <img
                 src={metadata.url}
@@ -254,10 +259,10 @@ const Notification = ({
             <div className="grid grid-cols-1 gap-1">
               {Object.entries(metadata).map(([key, value]) => (
                 <div key={key} className="flex items-center gap-2">
-                  <span className="text-black font-medium capitalize shrink-0">
+                  <span className="text-white font-medium capitalize shrink-0">
                     {key.replace(/([A-Z])/g, " $1").toLowerCase()}:
                   </span>
-                  <span className="text-black truncate">
+                  <span className="text-white truncate">
                     {renderMetadataValue(key, value)}
                   </span>
                 </div>

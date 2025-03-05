@@ -75,7 +75,7 @@ export async function publishProjectOnVercel(inputData: {
       createdAt: new Date().toISOString(),
       eventName: "repo_created",
       metadata: {
-        repoUrl: repoData.htmlUrl,
+        github_repo: repoData.htmlUrl,
       },
     });
 
@@ -115,7 +115,7 @@ export async function publishProjectOnVercel(inputData: {
       createdAt: new Date().toISOString(),
       eventName: "vercel_deployment",
       metadata: {
-        projectUrl: projectUrl,
+        live_link: projectUrl,
       },
     });
 

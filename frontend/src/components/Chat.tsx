@@ -129,10 +129,10 @@ const Chat = ({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-700 break-words">
+                <p className="text-sm text-gray-400 break-words">
                   {loadingText}
                 </p>
-                <Loader2 className="animate-spin" size={20} />
+                <Loader2 className="animate-spin text-gray-200" size={20} />
               </div>
             </div>
           )}

@@ -14,27 +14,27 @@ const NotificationBoard = ({ notifications }: NotificationBoardProps) => {
   const formatMessage = (data: any): string => {
     switch (data.eventName) {
       case "wallet_created":
-        return `${data.characterId}'s wallet was created`;
+        return `${data.characterId}'s wallet was created 👛`;
       case "funds_requested":
         return `${data.characterId} requested ${formatEther(
           data.metadata.requestedAmount
-        )} S`;
+        )} S 💸`;
       case "repo_created":
-        return `${data.characterId} created a github repository: https://github.com/${data.metadata.repoOwner}/${data.metadata.repoName}`;
+        return `Risha created a GitHub repository for the project, necessary for rapid collaboration and development. 📁`;
       case "vercel_deployment":
-        return `${data.characterId} deployed project on Vercel: https://${data.metadata.deploymentId}.vercel.app`;
+        return `Risha deployed the project on Vercel, leveraging modern cloud infrastructure for global access and agile updates. 🚀`;
       case "prd_created":
-        return `${data.characterId} created project PRD: https://www.notion.so/${data.metadata.prdId}`;
+        return `Risha crafted a PRD on Notion outlining milestones, objectives, and deliverables—a concise roadmap from concept to execution. 📝`;
       case "listed_on_pad19":
-        return `${data.characterId} created pad19 listing: https://${window.location}/pad19`;
+        return `Pearl published a pad19 listing for the project, enabling quick testing, feedback, and early validation within the Sonic Blockchain community. 📋`;
       case "tweet_created":
-        return `${data.characterId} created a tweet to promote product on X: https://x.com/i/${data.metadata.tweetId}`;
+        return `Monad tweeted about the project on X to generate buzz, drive engagement, and attract early adopters by showcasing its unique value. 🐦`;
       case "research_completed":
-        return `${data.characterId} completed crypto and DeFi strategy research and has offered advice on how to best position for success.`;
+        return `Jaden completed in-depth crypto and DeFi research, offering actionable insights to position the project competitively in an evolving market. 📊`;
       case "pin_idea":
-        return data.message;
+        return `${data.message} 📌`;
       default:
-        return `System event: ${data.eventName}`;
+        return `System event: ${data.eventName} ⚙️`;
     }
   };
 
