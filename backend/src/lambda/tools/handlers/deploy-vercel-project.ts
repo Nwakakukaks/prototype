@@ -1,6 +1,11 @@
-// handlers/publish-vercel-project.ts
 import axios from "axios";
-import { logConsole } from "../../../utils";
+import {
+  logConsole,
+  sendCharacterMessage,
+  sendGodMessage,
+} from "../../../utils";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 /**
  * Helper: Creates a GitHub repository for the project.
@@ -11,15 +16,19 @@ async function createGithubRepo(repoName: string, description: string) {
       name: repoName,
       description: description,
       private: false,
-      auto_init: true, // Initialize repository with a README
+      auto_init: true,
     };
 
-    const response = await axios.post("https://api.github.com/user/repos", payload, {
-      headers: {
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      "https://api.github.com/user/repos",
+      payload,
+      {
+        headers: {
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     logConsole.info(`GitHub repo created: ${response.data.full_name}`);
     return {
@@ -42,31 +51,73 @@ export async function publishProjectOnVercel(inputData: {
   branch?: string;
   createdBy: string;
   sessionId: string;
+  characterId: string;
 }) {
-  try {
-    // Step 1: Create GitHub repository
-    const repoData = await createGithubRepo(inputData.projectName, inputData.projectDescription);
+  const dynamoClient = new DynamoDBClient({});
+  const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
-    // Step 2: Trigger Vercel deployment using repository details
+  try {
+    await sendCharacterMessage(
+      inputData.characterId,
+      inputData.sessionId,
+      docClient,
+      `Creating GitHub repository, one second...`
+    );
+
+    const repoData = await createGithubRepo(
+      inputData.projectName,
+      inputData.projectDescription
+    );
+
+    await sendGodMessage(inputData.sessionId, docClient, {
+      createdBy: inputData.createdBy,
+      characterId: inputData.characterId,
+      createdAt: new Date().toISOString(),
+      eventName: "repo_created",
+      metadata: {
+        repoUrl: repoData.htmlUrl,
+      },
+    });
+
+    await sendCharacterMessage(
+      inputData.characterId,
+      inputData.sessionId,
+      docClient,
+      `Triggering Vercel deployment...`
+    );
+
     const deploymentPayload = {
       name: inputData.projectName,
       gitSource: {
         type: "github",
-        repoId: repoData.fullName, 
+        repoId: repoData.fullName,
         branch: inputData.branch || "main",
       },
-      // Additional deployment settings can be added here.
     };
 
-    const vercelResponse = await axios.post("https://api.vercel.com/v13/deployments", deploymentPayload, {
-      headers: {
-        Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const vercelResponse = await axios.post(
+      "https://api.vercel.com/v13/deployments",
+      deploymentPayload,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     logConsole.info(`Vercel deployment initiated: ${vercelResponse.data.id}`);
     const projectUrl = vercelResponse.data.url;
+
+    await sendGodMessage(inputData.sessionId, docClient, {
+      createdBy: inputData.createdBy,
+      characterId: inputData.characterId,
+      createdAt: new Date().toISOString(),
+      eventName: "vercel_deployment",
+      metadata: {
+        projectUrl: projectUrl,
+      },
+    });
 
     return {
       message: "Project published successfully on Vercel",

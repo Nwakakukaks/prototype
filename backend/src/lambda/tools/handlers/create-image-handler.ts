@@ -15,7 +15,7 @@ export async function createImage({ createdBy, characterId, sessionId, imageName
     logConsole.info('Using prompt:', prompt);
 
     await sendCharacterMessage(characterId, sessionId, docClient,
-        `Ohh I can draw that, one second...`);
+        `Drawing logo for our project, one second...`);
 
     // Construct request payload
     const requestBody = {
@@ -82,6 +82,7 @@ export async function createImage({ createdBy, characterId, sessionId, imageName
         logConsole.info('Successfully uploaded thumbnail to S3');
         const url = await createPresignedUrl(imageKey);
 
+        // where the notification events are called / sent
         await sendGodMessage(sessionId, docClient, {
             createdBy,
             characterId,
@@ -91,7 +92,7 @@ export async function createImage({ createdBy, characterId, sessionId, imageName
         });
 
         await sendCharacterMessage(characterId, sessionId, docClient,
-            `Okay ill send it to the Office so you can see it.`);
+            `Okay i'll send it to the Office so you can see it.`);
 
         logConsole.info('Image generation and upload complete', { imageName, imageKey });
         return { message: `Image created successfully with imageKey: ${imageKey} and NFTName: ${imageName}`, imageName, imageKey, url, description: prompt };

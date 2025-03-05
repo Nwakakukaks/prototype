@@ -1,6 +1,15 @@
 // handlers/create-notion-project-doc.ts
 import axios from "axios";
-import { logConsole } from "../../../utils";
+import {
+  logConsole,
+  sendCharacterMessage,
+  sendGodMessage,
+} from "../../../utils";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+
+const dynamoClient = new DynamoDBClient({});
+const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
 /**
  * Creates a Notion page (PRD) with project details and milestones.
@@ -12,9 +21,17 @@ export async function createNotionProjectDoc(inputData: {
   description: string;
   milestones: string[];
   createdBy: string;
+  characterId: string;
   sessionId: string;
 }) {
   try {
+    await sendCharacterMessage(
+      inputData.characterId,
+      inputData.sessionId,
+      docClient,
+      `Creating the project document on notion, one second...`
+    );
+
     const milestonesText = inputData.milestones
       .map((ms) => `• ${ms}`)
       .join("\n");
@@ -50,22 +67,6 @@ export async function createNotionProjectDoc(inputData: {
           ],
         },
       },
-      // children: [
-      //   {
-      //     object: "block",
-      //     type: "heading_2",
-      //     heading_2: {
-      //       text: [{ type: "text", text: { content: "Project Overview" } }],
-      //     },
-      //   },
-      //   {
-      //     object: "block",
-      //     type: "paragraph",
-      //     paragraph: {
-      //       text: [{ type: "text", text: { content: inputData.description } }],
-      //     },
-      //   },
-      // ],
     };
 
     const response = await axios.post(
@@ -81,6 +82,18 @@ export async function createNotionProjectDoc(inputData: {
     );
 
     logConsole.info(`Notion page created: ${response.data.id}`);
+
+    await sendGodMessage(inputData.sessionId, docClient, {
+      createdBy: inputData.createdBy,
+      characterId: inputData.characterId,
+      createdAt: new Date().toISOString(),
+      eventName: "prd_created",
+      metadata: {
+        id: response.data.id,
+        url: response.data.url,
+      },
+    });
+
     return {
       message: "Notion project document created successfully",
       pageId: response.data.id,

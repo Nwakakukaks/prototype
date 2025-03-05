@@ -24,7 +24,6 @@ import {
 } from "./tools/twitter-tool";
 import { walletToolDescription, walletToolHandler } from "./tools/wallet-tool";
 import "dotenv/config";
-import { Anthropic } from "@anthropic-ai/sdk";
 import {
   projectToolDescriptions,
   projectToolHandler,
@@ -96,6 +95,11 @@ const pearlAgent = new BedrockLLMAgent({
   modelId: getModelId("Pearl"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
+  toolConfig: {
+    tool: twitterToolDescription as any,
+    useToolHandler: twitterToolHandler,
+    toolMaxRecursions: 5,
+  },
 });
 pearlAgent.setSystemPrompt(INTERFACE_DESIGNER_PROMPT);
 
@@ -110,6 +114,11 @@ const jadenAgent = new BedrockLLMAgent({
   description:
     "You are Jaden, a cool, laid-back market analyst who monitors ecosystem trends and analyzes market data to provide strategic insights for product development. You conduct market research, validate ideas, provide user insights, and offer strategic recommendations based on data and current market trends. You collaborate with Risha, Pearl, Qwen, and Monad to build and validate dApps on the Sonic ecosystem, providing actionable insights that directly impact product development decisions and user adoption.",
   saveChat: true,
+  toolConfig: {
+    tool: twitterToolDescription as any,
+    useToolHandler: twitterToolHandler,
+    toolMaxRecursions: 5,
+  },
 });
 jadenAgent.setSystemPrompt(MARKET_ANALYST_PROMPT);
 
@@ -142,7 +151,7 @@ const monadAgent = new BedrockLLMAgent({
   toolConfig: {
     tool: twitterToolDescription as any,
     useToolHandler: twitterToolHandler,
-    toolMaxRecursions: 10,
+    toolMaxRecursions: 5,
   },
 });
 monadAgent.setSystemPrompt(GROWTH_EXPERT_PROMPT);
@@ -159,7 +168,7 @@ const rishaAgent = new BedrockLLMAgent({
   toolConfig: {
     tool: projectToolDescriptions as any,
     useToolHandler: projectToolHandler,
-    toolMaxRecursions: 5,
+    toolMaxRecursions: 10,
   },
 });
 rishaAgent.setSystemPrompt(PRODUCT_MANAGER_PROMPT);

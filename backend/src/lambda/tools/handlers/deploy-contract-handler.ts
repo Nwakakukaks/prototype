@@ -41,9 +41,9 @@ export async function deployContract({ sessionId, createdBy, characterId, tokenN
         // Check signer eth balance
         const address = signer.address;
         logConsole.info(`Signer Address: ${address}`)
-        // Get native ETH balance of signer's address
+        // Get native S balance of signer's address
         const ethBalance = await provider.getBalance(signer.address);
-        logConsole.info(`Signer ETH balance: ${ethers.formatEther(ethBalance)}`)
+        logConsole.info(`Signer S balance: ${ethers.formatEther(ethBalance)}`)
 
         const deployedContractAddress = await deployERC20Token({
             name: tokenName,

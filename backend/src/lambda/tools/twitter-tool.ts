@@ -76,7 +76,7 @@ export const twitterToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is performing the action. This will always be Monad.",
+                            description: "The character that is performing the action. This will always be Jaden.",
                         },
                         sessionId: {
                             type: "string",
@@ -110,7 +110,7 @@ export const twitterToolDescription = [
                         },
                         characterId: {
                             type: "string",
-                            description: "The character that is performing the action. This will always be Monad.",
+                            description: "The character that is performing the action. This will always be Pearl.",
                         },
                         sessionId: {
                             type: "string",

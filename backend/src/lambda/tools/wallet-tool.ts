@@ -115,8 +115,8 @@ export const walletToolDescription = [
     },
     {
         toolSpec: {
-            name: "Get_ETH_Balance_Tool",
-            description: "Gets the ETH balance of the wallet along with a friendly concise message",
+            name: "Get_S_Balance_Tool",
+            description: "Gets the S balance of the wallet along with a friendly concise message",
             inputSchema: {
                 json: {
                     type: "object",
@@ -273,8 +273,8 @@ export const walletToolDescription = [
     },
     {
         toolSpec: {
-            name: "Transfer_ETH_Tool",
-            description: "Transfers ETH from one wallet to another",
+            name: "Transfer_S_Tool",
+            description: "Transfers S from one wallet to another",
             inputSchema: {
                 json: {
                     type: "object",
@@ -338,7 +338,7 @@ export const walletToolDescription = [
     {
         toolSpec: {
             name: "Create_Uniswap_Pool_Tool",
-            description: "Creates a new uniswap pool given an ERC20 token address and a small amount of ETH",
+            description: "Creates a new uniswap pool given an ERC20 token address and a small amount of S",
             inputSchema: {
                 json: {
                     type: "object",
@@ -365,7 +365,7 @@ export const walletToolDescription = [
                         },
                         amountEtherDesiredInWei: {
                             type: "string",
-                            description: "The amount of ETH to create the uniswap pool with in Wei. This acts as the liquidity for the pool.",
+                            description: "The amount of S to create the uniswap pool with in Wei. This acts as the liquidity for the pool.",
                         }
                     },
                     required: ["sessionId", "createdBy", "characterId", "erc20TokenAddress", "amountTokenDesiredInWei", "amountEtherDesiredInWei"],
@@ -453,7 +453,7 @@ export async function walletToolHandler(response: Response, conversation: Conver
                     });
                     break;
 
-                case "Get_ETH_Balance_Tool":
+                case "Get_S_Balance_Tool":
                     result = await getEthBalance({
                         createdBy: toolUse.input.createdBy,
                         characterId: toolUse.input.characterId,
@@ -488,7 +488,7 @@ export async function walletToolHandler(response: Response, conversation: Conver
                     });
                     break;
 
-                case "Transfer_ETH_Tool":
+                case "Transfer_S_Tool":
                     result = await transferETH({
                         createdBy: toolUse.input.createdBy,
                         characterId: toolUse.input.characterId,

@@ -211,7 +211,7 @@ function CharacterSelect() {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent
         side="left"
-        className={`${pixelify_sans.className}w-[400px] sm:w-[540px] overflow-y-auto bg-gray-950 [&>button]:text-gray-400`}
+        className={`${pixelify_sans.className}w-[400px] sm:w-[540px] overflow-y-auto bg-gray-950 [&>button]:text-gray-400 scrollbar-hide`}
       >
         <SheetHeader>
           <SheetTitle className={` text-gray-300`}>

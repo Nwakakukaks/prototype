@@ -15,13 +15,13 @@ import GameControlPanel from "./RecursiveChat";
 interface PlayerState {
   x: number;
   y: number;
-  direction: 'up' | 'down' | 'left' | 'right';
+  direction: "up" | "down" | "left" | "right";
   isMoving: boolean;
   message: string | null;
   messageTimeoutId?: NodeJS.Timeout;
   ai?: {
-      action: 'moving' | 'paused';
-      actionEndTime: number;
+    action: "moving" | "paused";
+    actionEndTime: number;
   };
 }
 
@@ -142,18 +142,39 @@ const Game = ({
   }, []);
 
   const handleGodMessage = useCallback((message: string) => {
-    // Only add God messages to notifications
+    let parsed;
+    try {
+      parsed = JSON.parse(message);
+    } catch (error) {
+      parsed = null;
+    }
+
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      Object.keys(parsed).length === 1 &&
+      parsed.messageId
+    ) {
+      console.log("Ignored message with only messageId:", message);
+      return;
+    }
+
+    // Otherwise, add the God message to notifications
     setNotifications((prev) =>
       [
         {
           id: crypto.randomUUID(),
           message: message,
           timestamp: new Date(),
+          characterName: "You",
+          chatMode: chatMode,
           metadata: null,
         },
         ...prev,
       ].slice(0, 50)
     );
+
+    console.log(message);
   }, []);
 
   const handleGodError = useCallback((error: string) => {
@@ -161,7 +182,6 @@ const Game = ({
   }, []);
 
   // Store functions in refs to have stable references
-
   const handleCharacterMessageRef = useRef(handleCharacterMessage);
   const handleCharacterErrorRef = useRef(handleCharacterError);
   const handleGodMessageRef = useRef(handleGodMessage);
@@ -278,7 +298,7 @@ const Game = ({
         );
       }
 
-      setIsInitialized(true)
+      setIsInitialized(true);
     };
 
     initializeGame().catch((error) => {
@@ -303,8 +323,6 @@ const Game = ({
     }
   }, [chatMode]);
 
-  // Input key down handler for chat
-
   // Function to send a message to all characters
   const handleGlobalMessage = (message: string) => {
     if (message.trim()) {
@@ -321,16 +339,32 @@ const Game = ({
         ].slice(-50)
       );
 
+      if (chatMode === "RECURSIVE") {
+        setNotifications((prev) =>
+          [
+            {
+              id: crypto.randomUUID(),
+              message: message,
+              timestamp: new Date(),
+              characterName: "You",
+              chatMode: chatMode,
+              metadata: null,
+            },
+            ...prev,
+          ].slice(0, 50)
+        );
+      }
+
       // Send message through God
       if (godRef.current) {
         godRef.current.sendMessage(message);
+        return;
       } else {
         console.error("God instance not initialized");
       }
     }
   };
 
-  // Return statement with conditional rendering
   return (
     <div className="relative flex flex-col md:flex-row gap-4 px-16 h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)]">
       {isOpen && <CharacterSelect />}

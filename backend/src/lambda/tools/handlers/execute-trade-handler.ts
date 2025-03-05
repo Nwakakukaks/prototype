@@ -109,7 +109,7 @@ export async function executeTrade({
             if (balance < ethAmountInWei) {
                 return {
                     status: 'error',
-                    message: 'Not enough ETH to execute trade. Need some ETH.'
+                    message: 'Not enough S to execute trade. Need some S.'
                 };
             }
 
@@ -121,7 +121,7 @@ export async function executeTrade({
             const slippageBps = Math.floor(slippagePercentage * 100); // Convert percentage to basis points
             const minAmountOut = amountOut * BigInt(10000 - slippageBps) / BigInt(10000);
 
-            logConsole.info(`Buying tokens. ETH to spend: ${ethers.formatEther(ethAmountInWei)} ETH`);
+            logConsole.info(`Buying tokens. S to spend: ${ethers.formatEther(ethAmountInWei)} S`);
             logConsole.info(`Minimum tokens to receive: ${minAmountOut.toString()}`);
 
             logConsole.info('Submitting buy transaction...');
@@ -168,7 +168,7 @@ export async function executeTrade({
             const minAmountOut = amountOut * BigInt(10000 - slippageBps) / BigInt(10000);
 
             logConsole.info(`Selling tokens. Tokens to sell: ${tokenAmountInWei.toString()}`);
-            logConsole.info(`Minimum ETH to receive: ${ethers.formatEther(minAmountOut)} ETH`);
+            logConsole.info(`Minimum S to receive: ${ethers.formatEther(minAmountOut)} S`);
 
             logConsole.info('Submitting sell transaction...');
             transaction = await router.swapExactTokensForETH(

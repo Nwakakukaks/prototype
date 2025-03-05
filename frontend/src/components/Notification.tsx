@@ -39,8 +39,18 @@ const Notification = ({
         return "bg-indigo-500 text-white";
       case "basename_managed":
         return "bg-blue-700 text-white";
+      case "repo_created":
+        return "bg-teal-500 text-white";
+      case "vercel_deployment":
+        return "bg-violet-500 text-white";
+      case "prd_created":
+        return "bg-red-500 text-white";
+      case "listed_on_pad19":
+        return "bg-cyan-500 text-white";
+      case "research_completed":
+        return "bg-black text-white";
       default:
-        return "bg-muted text-black";
+        return "bg-orange-600 text-white";
     }
   };
 
@@ -114,7 +124,7 @@ const Notification = ({
       key === "amount" ||
       key === "totalSupply"
     ) {
-      return `${parseFloat(value) / 1e18} ETH`;
+      return `${parseFloat(value) / 1e18} S`;
     }
     return value;
   };
@@ -132,6 +142,14 @@ const Notification = ({
         return `https://zora.co/collect/zora:${metadata.contractAddress.toLowerCase()}`;
       case "tweet_created":
         return `https://x.com/i/${metadata.tweetId}`;
+      case "prd_created":
+        return `${metadata.url}`;
+      case "vercel_deployment":
+        return `${metadata.projectUrl}`;
+      case "repo_created":
+        return `${metadata.repoUrl}`;
+      case "listed_on_pad19":
+        return `http://${window.location}/pad19`; // change to deployment url
       default:
         return null;
     }
@@ -165,7 +183,7 @@ const Notification = ({
                 characterName
               )}`}
             >
-              {characterName}
+              {characterName === "You" ? "Project Idea" : characterName}
             </span>
             {eventName && (
               <span
@@ -205,12 +223,7 @@ const Notification = ({
                 className="rounded-md"
               />
             )}
-            {eventName === "basename_managed" && metadata.basename && (
-              <Name
-                address={metadata.walletAddress as `0x${string}`}
-                chain={base}
-              />
-            )}
+
             {eventName === "uniswap_pool_created" && (
               <img
                 src={

@@ -91,10 +91,10 @@ export async function createUniswapPool({
         logConsole.info('Connected to provider and created signer with address:', signer.address);
         logConsole.info('Using Uniswap V2 Router address:', UNISWAP_V2_ROUTER_ADDRESS);
 
-        // Get current wallet ETH balance
+        // Get current wallet S balance
         const balance = await provider.getBalance(signer.address);
         const balanceInEth = ethers.formatEther(balance);
-        logConsole.info(`Wallet balance: ${balanceInEth} ETH for characterId: ${characterId}`);
+        logConsole.info(`Wallet balance: ${balanceInEth} S for characterId: ${characterId}`);
 
         logConsole.info("Input Values: ", amountTokenDesiredInWei, amountEtherDesiredInWei);
         logConsole.info("Token Address: ", erc20TokenAddress);
@@ -158,7 +158,7 @@ export async function createUniswapPool({
         logConsole.info('Setting deadline to:', new Date(deadline * 1000).toISOString());
 
         // Add liquidity
-        logConsole.info(`Adding liquidity: ${ethers.formatUnits(amountTokenDesiredWei, tokenDecimals)} tokens and ${ethers.formatEther(amountEtherDesiredWei)} ETH`);
+        logConsole.info(`Adding liquidity: ${ethers.formatUnits(amountTokenDesiredWei, tokenDecimals)} tokens and ${ethers.formatEther(amountEtherDesiredWei)} S`);
         const liquidityTx = await router.addLiquidityETH(
             erc20TokenAddress,
             amountTokenDesiredWei,

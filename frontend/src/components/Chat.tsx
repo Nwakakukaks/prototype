@@ -13,7 +13,6 @@ interface ChatMessage {
   timestamp: Date;
   address?: string;
   characterName: string;
-  
 }
 
 interface ChatProps {
@@ -58,7 +57,7 @@ const Chat = ({
       });
     }
     setAnimateRadio(true);
-    const timer = setTimeout(() => setAnimateRadio(false), 1000);
+    const timer = setTimeout(() => setAnimateRadio(false), 3000);
     return () => clearTimeout(timer);
   }, [messages, chatMode]);
 
@@ -84,15 +83,12 @@ const Chat = ({
         pixelify_sans.className
       } transition-all duration-300 flex-1 md:flex-none md:w-full h-full max-h-screen md:relative ${
         isExpanded
-          ? "fixed inset-0 z-50 bg-card/95"
+          ? "fixed inset-0 z-50 bg-gray-950"
           : "relative bg-gray-950 backdrop-blur-sm rounded-lg h-14 md:h-full"
       }`}
     >
       <div className="flex flex-col h-full">
-        <div
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="p-4 border-b border-gray-200 cursor-pointer flex items-center gap-3 md:cursor-default h-14 shrink-0"
-        >
+        <div className="p-4 border-b border-gray-200 cursor-pointer flex items-center gap-3 md:cursor-default h-14 shrink-0">
           <div className="flex-1 flex items-center justify-between">
             <h2 className="font-semibold tracking-tight text-2xl text-orange-600 flex items-center gap-2">
               Chat History
@@ -144,7 +140,10 @@ const Chat = ({
 
         <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
           <div className="flex gap-2 items-center ">
-            <LiveView animateRadio={animateRadio} notifications={notifications}/>
+            <LiveView
+              animateRadio={animateRadio}
+              notifications={notifications}
+            />
             <input
               type="text"
               value={message}

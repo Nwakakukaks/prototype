@@ -13,14 +13,14 @@ export async function transferETH(inputData: { senderWalletAddress: string, dest
         const balance = await provider.getBalance(signer.address);
         const amountInWei = BigInt(inputData.amountInWei);
 
-        logConsole.info(`The balance of the wallet is ${ethers.formatEther(balance)} ETH for character ${inputData.characterId}`);
+        logConsole.info(`The balance of the wallet is ${ethers.formatEther(balance)} S for character ${inputData.characterId}`);
         if (balance < amountInWei) {
             return { message: "Insufficient funds, cannot transfer." };
         }
 
         // Get gas estimate
         const gasPrice = await provider.getFeeData();
-        const gasLimit = BigInt(21000); // Standard ETH transfer gas limit
+        const gasLimit = BigInt(21000); // Standard S transfer gas limit
         const totalCost = amountInWei + (gasLimit * gasPrice.gasPrice!);
 
         if (balance < totalCost) {
@@ -52,7 +52,7 @@ export async function transferETH(inputData: { senderWalletAddress: string, dest
         console.error('Transfer failed:', error);
         return {
             error: error.name || 'TransferError',
-            message: `Failed to transfer ETH: ${error.message}`
+            message: `Failed to transfer S: ${error.message}`
         };
     }
 }

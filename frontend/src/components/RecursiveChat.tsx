@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Volume2,
   VolumeX,
@@ -35,6 +35,10 @@ interface GameControlPanelProps {
   notifications: any[];
 }
 
+interface VoiceSettings {
+  [key: string]: SpeechSynthesisVoice | null;
+}
+
 const GameControlPanel = ({
   chatMode,
   setChatMode,
@@ -46,15 +50,90 @@ const GameControlPanel = ({
   const [isSfxMuted, setIsSfxMuted] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const { sendTransaction } = useSendTransaction();
+  
+  // Audio and Voice states
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [gainNode, setGainNode] = useState<GainNode | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [agentVoices, setAgentVoices] = useState<VoiceSettings>({});
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const synthesisRef = useRef<SpeechSynthesis | null>(null);
 
+  // Initialize audio context
+  useEffect(() => {
+    const ctx = new (window.AudioContext)();
+    const gn = ctx.createGain();
+    setAudioContext(ctx);
+    setGainNode(gn);
+    
+    return () => {
+      ctx.close();
+    };
+  }, []);
+
+  // Load background music
+  useEffect(() => {
+    if (audioContext && gainNode) {
+      const audioElement = new Audio('/bgm.mp3');
+      audioElement.loop = true;
+      const source = audioContext.createMediaElementSource(audioElement);
+      source.connect(gainNode).connect(audioContext.destination);
+      audioElementRef.current = audioElement;
+      audioElement.play().catch(error => console.log('Audio play failed:', error));
+    }
+  }, [audioContext, gainNode]);
+
+  // Handle volume changes
+  useEffect(() => {
+    if (gainNode) {
+      gainNode.gain.value = isBgmMuted ? 0 : bgmVolume / 100;
+    }
+  }, [bgmVolume, isBgmMuted, gainNode]);
+
+  // Initialize speech synthesis
+  useEffect(() => {
+    synthesisRef.current = window.speechSynthesis;
+    
+    const loadVoices = () => {
+      const availableVoices = synthesisRef.current?.getVoices() || [];
+      setVoices(availableVoices);
+      
+      // Assign voices to agents (4 male, 1 female)
+      const maleVoices = availableVoices.filter(v => v.name.includes('Male'));
+      const femaleVoices = availableVoices.filter(v => v.name.includes('Female'));
+      
+      setAgentVoices({
+        agent1: maleVoices[0] || null,
+        agent2: maleVoices[1] || null,
+        agent3: maleVoices[2] || null,
+        agent4: maleVoices[3] || null,
+        agent5: femaleVoices[0] || null,
+      });
+    };
+
+    setTimeout(loadVoices, 500);
+    synthesisRef.current.onvoiceschanged = loadVoices;
+  }, []);
+
+  // Handle fund requests
   useEffect(() => {
     const recentFundRequests = notifications
       ?.map((notification) => {
-        const data = JSON.parse(notification.message);
+        let data;
+        try {
+          data = JSON.parse(notification.message);
+        } catch (error) {
+          data = {
+            eventName: "custom",
+            createdAt: notification.timestamp,
+            metadata: {},
+            characterId: notification.characterName,
+            message: notification.message,
+          };
+        }
         return {
-          eventName: data.eventName,
+          ...data,
           timestamp: new Date(data.createdAt),
-          metadata: data.metadata,
         };
       })
       .filter(
@@ -72,6 +151,18 @@ const GameControlPanel = ({
     }
   }, [notifications, sendTransaction]);
 
+  // Speak new notifications
+  useEffect(() => {
+    if (chatMode !== "VOICE") return;
+
+    notifications.forEach(notification => {
+      const data = JSON.parse(notification.message);
+      const agentId = `agent${data.characterId}`; // Adjust based on your agent IDs
+      const message = formatMessage(data);
+      speakMessage(agentId, message);
+    });
+  }, [notifications, chatMode]);
+
   const formatMessage = (data: any): string => {
     switch (data.eventName) {
       case "wallet_created":
@@ -80,8 +171,23 @@ const GameControlPanel = ({
         return `${data.characterId} requested ${formatEther(
           data.metadata.requestedAmount
         )} S`;
+      case "custom":
+        return data.message;
       default:
         return `System event: ${data.eventName}`;
+    }
+  };
+
+  const speakMessage = (agentId: string, text: string) => {
+    if (isSfxMuted || !synthesisRef.current) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voice = agentVoices[agentId];
+    
+    if (voice) {
+      utterance.voice = voice;
+      utterance.volume = sfxVolume / 100;
+      synthesisRef.current.speak(utterance);
     }
   };
 
@@ -103,7 +209,7 @@ const GameControlPanel = ({
                 Manage chat mode and audio settings
               </CardDescription>
             </div>
-            <button className="">
+            <button>
               {isCollapsed ? (
                 <ChevronDown size={20} />
               ) : (
@@ -142,7 +248,6 @@ const GameControlPanel = ({
                     </SelectItem>
                     <SelectItem value="VOICE">
                       <div className="relative">
-                        {/* Experimental Badge */}
                         <span className="absolute bottom-4 right-28 mr-2 bg-blue-600 text-white text-[10px] font-semibold px-2 rounded-full">
                           beta
                         </span>
@@ -176,17 +281,14 @@ const GameControlPanel = ({
                   <div className="flex-1">
                     <p className="text-sm mb-1">Background Music</p>
                     <div className="w-full">
-                      {/* Using a div to style the slider */}
-                      <div className="w-full">
-                        <Slider
-                          value={[bgmVolume]}
-                          onValueChange={([value]) => setBgmVolume(value)}
-                          max={100}
-                          step={1}
-                          disabled={isBgmMuted}
-                          className="data-[disabled]:opacity-50"
-                        />
-                      </div>
+                      <Slider
+                        value={[bgmVolume]}
+                        onValueChange={([value]) => setBgmVolume(value)}
+                        max={100}
+                        step={1}
+                        disabled={isBgmMuted}
+                        className="data-[disabled]:opacity-50"
+                      />
                     </div>
                   </div>
                 </div>
@@ -214,15 +316,12 @@ const GameControlPanel = ({
                         className="data-[disabled]:opacity-50"
                       />
                       <style jsx global>{`
-                        /* Target the track and fill it with orange */
                         .slider-track[data-orientation="horizontal"] {
-                          background-color: #f97316 !important; /* Tailwind orange-500 */
+                          background-color: #f97316 !important;
                         }
-
-                        /* Target the thumb and make it orange */
                         .slider-thumb {
                           background-color: white !important;
-                          border: 2px solid #f97316 !important; /* Tailwind orange-500 */
+                          border: 2px solid #f97316 !important;
                         }
                       `}</style>
                     </div>

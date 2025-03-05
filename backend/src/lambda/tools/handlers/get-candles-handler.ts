@@ -152,7 +152,7 @@ function calculatePrice(
     const decimal0Adj = BigInt(10) ** BigInt(decimals0);
     const decimal1Adj = BigInt(10) ** BigInt(decimals1);
 
-    // Flip the calculation to get token price in ETH
+    // Flip the calculation to get token price in S
     const reserve0Adjusted = Number(reserve0Big);
     const reserve1Adjusted = Number(reserve1Big * decimal0Adj) / Number(decimal1Adj);
 
@@ -272,7 +272,7 @@ async function getEthPrice(): Promise<number> {
             return usdcAmount / ethAmount;
         }
     } catch (error) {
-        console.error('Error fetching ETH price:', error);
+        console.error('Error fetching S price:', error);
         throw error;
     }
 }
@@ -285,10 +285,10 @@ async function getEthPrice(): Promise<number> {
 //     try {
 //         logConsole.info('🚀 Starting local price data test...\n');
 
-//         // First get ETH price in USD
-//         logConsole.info('Fetching current ETH price...');
+//         // First get S price in USD
+//         logConsole.info('Fetching current S price...');
 //         const ethPrice = await getEthPrice();
-//         logConsole.info(`Current ETH price: $${ethPrice.toFixed(2)}`);
+//         logConsole.info(`Current S price: $${ethPrice.toFixed(2)}`);
 
 //         for (const [pairName, pairAddress] of Object.entries(testPairs)) {
 //             logConsole.info(`\n📊 Testing ${pairName} pair (${pairAddress})`);
@@ -297,7 +297,7 @@ async function getEthPrice(): Promise<number> {
 //             logConsole.info('\nFetching basic price data...');
 //             const priceData = await getUniswapPriceData(pairAddress, 300, 15);
 //             if (priceData) {
-//                 logConsole.info('Current TOSHI Price (in ETH):', priceData.currentPrice.toFixed(8));
+//                 logConsole.info('Current TOSHI Price (in S):', priceData.currentPrice.toFixed(8));
 //                 logConsole.info('Current TOSHI Price (in USD):', (priceData.currentPrice * ethPrice).toFixed(4));
 //                 logConsole.info('Token0 (TOSHI) Address:', priceData.token0Address);
 //                 logConsole.info('Token1 (WETH) Address:', priceData.token1Address);
@@ -316,9 +316,9 @@ async function getEthPrice(): Promise<number> {
 //             const analytics = await getPriceAnalytics(pairAddress);
 //             if (analytics && !analytics.error) {
 //                 logConsole.info('Analytics:', {
-//                     currentPrice: `${analytics.currentPrice.toFixed(8)} ETH ($${(analytics.currentPrice * ethPrice).toFixed(4)})`,
-//                     recentHigh: `${analytics.analytics.recentHigh.toFixed(8)} ETH ($${(analytics.analytics.recentHigh * ethPrice).toFixed(4)})`,
-//                     recentLow: `${analytics.analytics.recentLow.toFixed(8)} ETH ($${(analytics.analytics.recentLow * ethPrice).toFixed(4)})`,
+//                     currentPrice: `${analytics.currentPrice.toFixed(8)} S ($${(analytics.currentPrice * ethPrice).toFixed(4)})`,
+//                     recentHigh: `${analytics.analytics.recentHigh.toFixed(8)} S ($${(analytics.analytics.recentHigh * ethPrice).toFixed(4)})`,
+//                     recentLow: `${analytics.analytics.recentLow.toFixed(8)} S ($${(analytics.analytics.recentLow * ethPrice).toFixed(4)})`,
 //                     volatility: `${analytics.analytics.volatility.toFixed(2)}%`,
 //                     priceChangePercent: `${analytics.analytics.priceChangePercent.toFixed(2)}%`,
 //                     overallTrend: analytics.analytics.overallTrend

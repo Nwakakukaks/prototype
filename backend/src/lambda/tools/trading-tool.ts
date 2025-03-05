@@ -31,7 +31,7 @@ export const tradingToolDescription = [
                         },
                         amountInWei: {
                             type: "string",
-                            description: "the amount of the token to trade in Wei. If buying, this is the amount of ETH to spend. If selling, this is the amount of tokens to sell.",
+                            description: "the amount of the token to trade in Wei. If buying, this is the amount of S to spend. If selling, this is the amount of tokens to sell.",
                         },
                         characterId: {
                             type: "string",
@@ -83,8 +83,8 @@ export const tradingToolDescription = [
     },
     {
         toolSpec: {
-            name: "Transfer_ETH_Tool",
-            description: "Transfers ETH from one wallet to another",
+            name: "Transfer_S_Tool",
+            description: "Transfers S from one wallet to another",
             inputSchema: {
                 json: {
                     type: "object",
@@ -147,8 +147,8 @@ export const tradingToolDescription = [
     },
     {
         toolSpec: {
-            name: "Get_ETH_Balance_Tool",
-            description: "Gets the ETH balance of the wallet along with a friendly concise message",
+            name: "Get_S_Balance_Tool",
+            description: "Gets the S balance of the wallet along with a friendly concise message",
             inputSchema: {
                 json: {
                     type: "object",
@@ -243,7 +243,7 @@ export async function tradingToolHandler(response: Response, conversation: Conve
                     // If this tool is used we dont want recursion
                     break;
 
-                case "Get_ETH_Balance_Tool":
+                case "Get_S_Balance_Tool":
                     result = await getEthBalance({
                         createdBy: toolUse.input.createdBy,
                         characterId: toolUse.input.characterId,
@@ -258,7 +258,7 @@ export async function tradingToolHandler(response: Response, conversation: Conve
                     });
                     break;
 
-                case "Transfer_ETH_Tool":
+                case "Transfer_S_Tool":
                     result = await transferETH({
                         createdBy: toolUse.input.createdBy,
                         characterId: toolUse.input.characterId,

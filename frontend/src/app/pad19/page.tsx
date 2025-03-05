@@ -1,9 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-export const dynamic = "force-dynamic";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Star,
   Users,
@@ -46,7 +44,7 @@ interface Metrics {
   revenue: string;
 }
 
-interface Startup {
+export interface Startup {
   name: string;
   description: string;
   logo: string;
@@ -67,7 +65,6 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
   <div className="bg-white rounded-lg shadow-lg p-6 transition-all hover:shadow-xl">
     <div className="flex items-center justify-between mb-4">
       <img
-      
         src={startup.logo}
         alt={`${startup.name} logo`}
         className="w-12 h-12 rounded-full object-contain"
@@ -140,101 +137,40 @@ type FilterStatus = "all" | Status;
 const LaunchpadPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortBy>("users");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [startups, setStartups] = useState<Startup[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const startups: Startup[] = [
-    {
-      name: "DeFi Pulse",
-      description: "Real-time DeFi protocol analytics and tracking platform",
-      logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J34Nc761zOtmS4gyWw60ueoFxcn1br78fIZYvJ",
-      requester: "PulseTech",
-      link: "https://defipulse.com",
-      users: "12.5k",
-      stars: 342,
-      launchedAt: "2d ago",
-      status: "Live",
-      metrics: {
-        dau: "2.3k",
-        revenue: "5.2k",
-      },
-    },
-    {
-      name: "Smart Yield",
-      description:
-        "Automated yield farming strategy optimizer for Sonic Blockchain",
-      logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3TO6Cz42r3VuUbqmM51Boz9gZcavsDI6kTHpE",
-      requester: "YieldSense ",
-      link: "https://smartyield.com",
-      users: "8.2k",
-      stars: 289,
-      launchedAt: "5d ago",
-      status: "Live",
-      metrics: {
-        dau: "1.8k",
-        revenue: "3.1k",
-      },
-    },
-    {
-      name: "Chain Analytics",
-      description: "Advanced blockchain data analytics and visualization tools",
-      logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3df3rLZ0DfhcbXeOIWLiz1ya3l7RjmTBqGNZP",
-      requester: "Chainlytics Inc.",
-      link: "https://chainanalytics.com",
-      users: "5.7k",
-      stars: 156,
-      launchedAt: "1w ago",
-      status: "Live",
-      metrics: {
-        dau: "1.2k",
-        revenue: "2.5k",
-      },
-    },
-    {
-      name: "NFT Marketplace",
-      description:
-        "Decentralized marketplace for trading unique digital assets",
-      logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J34Nc761zOtmS4gyWw60ueoFxcn1br78fIZYvJ",
-      requester: "Artify Labs",
-      link: "https://nftmarketplace.com",
-      users: "N/A",
-      stars: 0,
-      launchedAt: "5d ago",
-      status: "In Queue",
-      metrics: {
-        dau: "N/A",
-        revenue: "N/A",
-      },
-    },
-    {
-      name: "Token Swap",
-      description: "Cross-chain token swapping with minimal fees",
-      logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J34Nc761zOtmS4gyWw60ueoFxcn1br78fIZYvJ",
-      requester: "SwapWorks",
-      link: "https://tokenswap.com",
-      users: "N/A",
-      stars: 0,
-      launchedAt: "3d ago",
-      status: "In Queue",
-      metrics: {
-        dau: "N/A",
-        revenue: "N/A",
-      },
-    },
-    {
-      name: "DAO Factory",
-      description: "No-code platform for launching DAOs on Sonic Blockchain",
-      logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3JlEaf6HVozIYU8DFRWmkp7SC4bh16KiGHZfv",
-      requester: "DAOForge ",
-      link: "https://daofactory.com",
-      users: "N/A",
-      stars: 0,
-      launchedAt: "4d ago",
-      status: "In Queue",
-      metrics: {
-        dau: "N/A",
-        revenue: "N/A",
-      },
-    },
-  ];
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  useEffect(() => {
+    const fetchStartups = async () => {
+      try {
+        const res = await fetch(
+          `${supabaseUrl}/rest/v1/pad19_listings?select=*`,
+          {
+            headers: {
+              apikey: supabaseAnonKey!,
+              Authorization: `Bearer ${supabaseAnonKey}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch startups");
+        }
+        const data = await res.json();
+        setStartups(data);
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStartups();
+  }, [supabaseUrl, supabaseAnonKey]);
 
   const getSortedStartups = (): Startup[] => {
     const filteredStartups =
@@ -259,6 +195,10 @@ const LaunchpadPage: React.FC = () => {
     });
   };
 
+  if (loading)
+    return <div className="text-center p-8">Loading startups...</div>;
+  if (error) return <div className="text-center p-8 text-red-500">{error}</div>;
+
   return (
     <div className="min-h-screen">
       {/* Filters and Sorting */}
@@ -269,7 +209,7 @@ const LaunchpadPage: React.FC = () => {
               Sonic Launchpad
             </h1>
             <p className="text-gray-300 mt-2">
-              Discover and track the latest startups launching on Sonic
+              Discover and track the latest startups launching on the Sonic
               Ecosystem
             </p>
           </div>

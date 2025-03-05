@@ -30,7 +30,7 @@ export async function requestFunds({
         // Create a transaction request object
         const transactionRequest = {
             to: agentWallet.walletAddress,
-            value: ethers.parseEther("0.001").toString(), // Request a small amount (0.001 ETH)
+            value: ethers.parseEther("0.001").toString(), // Request a small amount (0.001 S)
             from: sendersWalletAddress,
         };
         await sendCharacterMessage(
