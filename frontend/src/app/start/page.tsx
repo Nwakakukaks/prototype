@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { pixelify_sans } from "../fonts";
 
 const GetStartedPage = () => {
     const router = useRouter();
@@ -45,7 +46,7 @@ const GetStartedPage = () => {
           Select a Track to Continue
           <ArrowRightCircleIcon />
         </p>
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className={`grid md:grid-cols-2 gap-8 max-w-5xl mx-auto `}>
           {/* Developer Card */}
           <Card className="relative group hover:shadow-xl transition-shadow duration-300 bg-card/90">
             <CardHeader className="pb-4">

@@ -29,10 +29,19 @@ import { formatEther } from "viem";
 import { useSendTransaction } from "wagmi";
 import { cn } from "@/lib/utils";
 
+interface ChatMessage {
+  id: string;
+  message: string;
+  timestamp: Date;
+  address?: string;
+  characterName: string;
+}
+
 interface GameControlPanelProps {
   chatMode: "STANDARD" | "RECURSIVE" | "VOICE";
   setChatMode: (mode: "STANDARD" | "RECURSIVE" | "VOICE") => void;
   notifications: any[];
+  messages: ChatMessage[];
 }
 
 interface VoiceSettings {
@@ -43,14 +52,15 @@ const GameControlPanel = ({
   chatMode,
   setChatMode,
   notifications,
+  messages,
 }: GameControlPanelProps) => {
-  const [bgmVolume, setBgmVolume] = useState(50);
-  const [sfxVolume, setSfxVolume] = useState(70);
+  const [bgmVolume, setBgmVolume] = useState(30);
+  const [sfxVolume, setSfxVolume] = useState(50);
   const [isBgmMuted, setIsBgmMuted] = useState(false);
   const [isSfxMuted, setIsSfxMuted] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const { sendTransaction } = useSendTransaction();
-  
+
   // Audio and Voice states
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [gainNode, setGainNode] = useState<GainNode | null>(null);
@@ -61,11 +71,11 @@ const GameControlPanel = ({
 
   // Initialize audio context
   useEffect(() => {
-    const ctx = new (window.AudioContext)();
+    const ctx = new window.AudioContext();
     const gn = ctx.createGain();
     setAudioContext(ctx);
     setGainNode(gn);
-    
+
     return () => {
       ctx.close();
     };
@@ -74,12 +84,14 @@ const GameControlPanel = ({
   // Load background music
   useEffect(() => {
     if (audioContext && gainNode) {
-      const audioElement = new Audio('/bgm.mp3');
+      const audioElement = new Audio("/bg-music.wav");
       audioElement.loop = true;
       const source = audioContext.createMediaElementSource(audioElement);
       source.connect(gainNode).connect(audioContext.destination);
       audioElementRef.current = audioElement;
-      audioElement.play().catch(error => console.log('Audio play failed:', error));
+      audioElement
+        .play()
+        .catch((error) => console.log("Audio play failed:", error));
     }
   }, [audioContext, gainNode]);
 
@@ -93,21 +105,23 @@ const GameControlPanel = ({
   // Initialize speech synthesis
   useEffect(() => {
     synthesisRef.current = window.speechSynthesis;
-    
+
     const loadVoices = () => {
       const availableVoices = synthesisRef.current?.getVoices() || [];
       setVoices(availableVoices);
-      
+
       // Assign voices to agents (4 male, 1 female)
-      const maleVoices = availableVoices.filter(v => v.name.includes('Male'));
-      const femaleVoices = availableVoices.filter(v => v.name.includes('Female'));
-      
+      const maleVoices = availableVoices.filter((v) => v.name.includes("Male"));
+      const femaleVoices = availableVoices.filter((v) =>
+        v.name.includes("Female")
+      );
+
       setAgentVoices({
-        agent1: maleVoices[0] || null,
-        agent2: maleVoices[1] || null,
-        agent3: maleVoices[2] || null,
-        agent4: maleVoices[3] || null,
-        agent5: femaleVoices[0] || null,
+        Risha: maleVoices[0] || null,
+        Qwen: maleVoices[1] || null,
+        Monad: maleVoices[2] || null,
+        Jaden: maleVoices[3] || null,
+        Pearl: femaleVoices[0] || null,
       });
     };
 
@@ -151,17 +165,20 @@ const GameControlPanel = ({
     }
   }, [notifications, sendTransaction]);
 
-  // Speak new notifications
   useEffect(() => {
-    if (chatMode !== "VOICE") return;
+    if (chatMode !== "VOICE") {
+      return;
+    }
 
-    notifications.forEach(notification => {
-      const data = JSON.parse(notification.message);
-      const agentId = `agent${data.characterId}`; // Adjust based on your agent IDs
-      const message = formatMessage(data);
-      speakMessage(agentId, message);
-    });
-  }, [notifications, chatMode]);
+    if (messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      // Using the characterName as the agent ID (or fallback to default)
+      const agentId = latestMessage.characterName;
+      const text = latestMessage.message;
+
+      speakMessage(agentId, text);
+    }
+  }, [messages, chatMode]);
 
   const formatMessage = (data: any): string => {
     switch (data.eventName) {
@@ -179,15 +196,27 @@ const GameControlPanel = ({
   };
 
   const speakMessage = (agentId: string, text: string) => {
-    if (isSfxMuted || !synthesisRef.current) return;
+    if (isSfxMuted) {
+      return;
+    }
+    if (!synthesisRef.current) {
+      return;
+    }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    const voice = agentVoices[agentId];
-    
-    if (voice) {
+
+    const voice =
+      agentVoices[agentId] || (voices.length > 0 ? voices[0] : null);
+    if (!voice) {
+      console.error("No voice available for agent:", agentId);
+    } else {
       utterance.voice = voice;
-      utterance.volume = sfxVolume / 100;
+    }
+    utterance.volume = sfxVolume / 100;
+    try {
       synthesisRef.current.speak(utterance);
+    } catch (err) {
+      console.error("Error speaking message:", err);
     }
   };
 
@@ -247,17 +276,26 @@ const GameControlPanel = ({
                       </span>
                     </SelectItem>
                     <SelectItem value="VOICE">
-                      <div className="relative">
-                        <span className="absolute bottom-4 right-28 mr-2 bg-blue-600 text-white text-[10px] font-semibold px-2 rounded-full">
-                          beta
-                        </span>
-                        <div className="flex flex-col">
-                          <span>Voice Mode</span>
+                      {chatMode !== "VOICE" ? (
+                        <div className="relative">
+                          <span className="absolute bottom-4 right-28 mr-2 bg-blue-600 text-white text-[10px] font-semibold px-2 rounded-full">
+                            beta
+                          </span>
+                          Voice Mode
+                          <div className="flex flex-col">
+                            <span className="block text-xs text-muted-foreground">
+                              Control and interact with agents with voice
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div>Voice Mode</div>
                           <span className="block text-xs text-muted-foreground">
                             Control and interact with agents with voice
                           </span>
-                        </div>
-                      </div>
+                        </>
+                      )}
                     </SelectItem>
                   </SelectContent>
                 </Select>

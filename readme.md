@@ -1,4 +1,4 @@
-# VersionOne: How Smart Builders Build on Sonic
+# VersionOne: How Smart Builders Build
 
 ## Current Development Challenges
 
@@ -95,6 +95,6 @@ VersionOne: AI-powered multi-agent system to build and launch the v1 of any dApp
 
 ## Sample prompts
 
-- Hey guys, I have an idea for a startup called LendChain—a decentralized lending platform that leverages smart contracts for secure collateral management and optimized yield generation. Our platform would use real-time risk assessments to dynamically adjust interest rates, provide instant loan approvals, and maintain full transparency through auditable smart contracts, ensuring both borrowers and lenders have a seamless, secure experience.
+- Hey Jaden, I have an idea for a startup called LendChain—a decentralized lending platform that leverages smart contracts for secure collateral management and optimized yield generation. Our platform would use real-time risk assessments to dynamically adjust interest rates, provide instant loan approvals, and maintain full transparency through auditable smart contracts, ensuring both borrowers and lenders have a seamless, secure experience.
 
 -

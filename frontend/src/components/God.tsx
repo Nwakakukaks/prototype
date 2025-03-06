@@ -59,7 +59,7 @@ export class God {
     }
 
     this.websocket.onopen = () => {
-      console.log(`God WebSocket connected`);
+      // console.log(`God WebSocket connected`);
     };
 
     this.websocket.onmessage = async (event) => {

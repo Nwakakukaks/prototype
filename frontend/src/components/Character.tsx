@@ -73,7 +73,7 @@ export class Character {
     }
 
     this.websocket.onopen = () => {
-      console.log(`WebSocket connected for character ${this.name}`);
+      // console.log(`WebSocket connected for character ${this.name}`);
 
       const randomTimeHelloMessage = Math.floor(Math.random() * 3000) + 1000;
       setTimeout(() => {

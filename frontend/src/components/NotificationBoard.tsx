@@ -34,7 +34,7 @@ const NotificationBoard = ({ notifications }: NotificationBoardProps) => {
       case "pin_idea":
         return `${data.message} 📌`;
       default:
-        return `System event: ${data.eventName} ⚙️`;
+        return ``;
     }
   };
 

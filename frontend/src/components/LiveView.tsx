@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,45 +24,32 @@ interface liveProps {
 }
 
 const LiveView = ({ animateRadio, notifications }: liveProps) => {
-  const [open, setOpen] = useState(false);
   const [activeSession, setActiveSession] = useState(true);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(defaultCode);
   const [isTyping, setIsTyping] = useState(false);
   const [currentTab, setCurrentTab] = useState("notifications");
-  const [codeSnippets, setCodeSnippets] = useState({
-    main: "",
-    landing: "",
-    header: "",
-  });
 
-  const simulateAiTyping = () => {
-    setIsTyping(true);
-    setCode("");
-
-    const exampleCode = `
-function fibonacci(n) {
-  if (n <= 1) return n;
-  
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
-
-// Display the first 10 Fibonacci numbers
-for (let i = 0; i < 10; i++) {
-  console.log(fibonacci(i));
-}
-`;
-
-    let i = 0;
-    const typeInterval = setInterval(() => {
-      if (i < exampleCode.length) {
-        setCode((prev) => prev + exampleCode.charAt(i));
-        i++;
-      } else {
-        clearInterval(typeInterval);
-        setIsTyping(false);
+  useEffect(() => {
+    if (notifications && notifications.length > 0) {
+      let interfaceNotification = null;
+      for (const notification of notifications) {
+        let parsedData;
+        try {
+          parsedData = JSON.parse(notification.message);
+        } catch (error) {
+          continue;
+        }
+        if (parsedData.eventName === "interface_created") {
+          interfaceNotification = parsedData;
+          break;
+        }
       }
-    }, 50);
-  };
+      if (interfaceNotification && interfaceNotification.metadata) {
+        const codeContent = interfaceNotification.metadata.code;
+        setCode(codeContent);
+      }
+    }
+  }, [notifications]);
 
   return (
     <Dialog>
@@ -123,11 +110,11 @@ for (let i = 0; i < 10; i++) {
               </TabsContent>
 
               <TabsContent value="editor" className="mt-4">
-                <CodeEditor />
+                <CodeEditor code={code} />
               </TabsContent>
 
               <TabsContent value="preview" className="mt-4">
-                <CodePreview codeSnippets={codeSnippets} />
+                <CodePreview code={code} />
               </TabsContent>
             </Tabs>
           </div>
@@ -138,3 +125,81 @@ for (let i = 0; i < 10; i++) {
 };
 
 export default LiveView;
+
+const defaultCode = `export const MainPage = () => {
+    return (
+      <div className="bg-gray-100 min-h-screen p-8">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-blue-900 mb-8">Lending Dashboard</h2>
+          
+          <div className="grid grid-cols-3 gap-6">
+            {/* Lending Section */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">Lend Assets</h3>
+              <div className="space-y-4">
+                <select className="w-full p-2 border rounded-lg">
+                  <option>Select Asset</option>
+                  <option>ETH</option>
+                  <option>USDC</option>
+                  <option>DAI</option>
+                </select>
+                <input 
+                  type="number" 
+                  placeholder="Enter Amount" 
+                  className="w-full p-2 border rounded-lg"
+                />
+                <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                  Supply Liquidity
+                </button>
+              </div>
+            </div>
+  
+            {/* Borrowing Section */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">Borrow Assets</h3>
+              <div className="space-y-4">
+                <select className="w-full p-2 border rounded-lg">
+                  <option>Select Collateral</option>
+                  <option>ETH</option>
+                  <option>BTC</option>
+                </select>
+                <input 
+                  type="number" 
+                  placeholder="Borrow Amount" 
+                  className="w-full p-2 border rounded-lg"
+                />
+                <div className="text-sm text-gray-600">
+                  Collateralization Ratio: 150%
+                </div>
+                <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                  Borrow Now
+                </button>
+              </div>
+            </div>
+  
+            {/* Portfolio Section */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">Your Portfolio</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span>Total Supplied</span>
+                  <span className="font-bold">$5,420.35</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total Borrowed</span>
+                  <span className="font-bold">$2,310.75</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Current APY</span>
+                  <span className="font-bold text-green-600">4.5%</span>
+                </div>
+                <button className="w-full bg-gray-200 text-blue-900 py-3 rounded-lg hover:bg-gray-300">
+                  View Full Portfolio
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };`;

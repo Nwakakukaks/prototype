@@ -3,7 +3,7 @@
 import { pixelify_sans } from "@/app/fonts";
 import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
-import { Loader2, RadioTowerIcon } from "lucide-react";
+import { Loader2, RadioTowerIcon, Mic, MicOff } from "lucide-react";
 import { CustomConnectButton } from "./ConnectButton";
 import LiveView from "./LiveView";
 
@@ -21,6 +21,64 @@ interface ChatProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
   notifications: any[];
+}
+
+// Define types for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  readonly length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  readonly length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal?: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechGrammar {
+  src: string;
+  weight: number;
+}
+
+interface SpeechGrammarList {
+  readonly length: number;
+  item(index: number): SpeechGrammar;
+  [index: number]: SpeechGrammar;
+  addFromURI(src: string, weight?: number): void;
+  addFromString(string: string, weight?: number): void;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  maxAlternatives: number;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onstart: (event: Event) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: Event) => void;
+  onend: (event: Event) => void;
+}
+
+// Declare global types for the Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
+  }
 }
 
 const characterColors: { [key: string]: string } = {
@@ -43,12 +101,66 @@ const Chat = ({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [message, setMessage] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Reasoning...");
-
   const [animateRadio, setAnimateRadio] = useState(false);
 
+  // Voice recording states
+  const [isRecording, setIsRecording] = useState(false);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null
+  );
+
+  // Audio references for sending and receiving messages
+  const sendMessageAudioRef = useRef(new Audio("/message-sent.mp3"));
+  const receiveMessageAudioRef = useRef(new Audio("/message-recieved.mp3"));
+  const voiceStartAudioRef = useRef(new Audio("/message-sent.mp3"));
+  const voiceEndAudioRef = useRef(new Audio("/message-sent.mp3"));
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognitionAPI =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (SpeechRecognitionAPI) {
+        const recognitionInstance = new SpeechRecognitionAPI();
+
+        recognitionInstance.continuous = true;
+        recognitionInstance.interimResults = true;
+        recognitionInstance.lang = "en-US";
+
+        recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
+          let finalTranscript = "";
+
+          for (let i = 0; i < event.results.length; i++) {
+            const result = event.results[i];
+            const transcript = result[0].transcript;
+
+            if (result.isFinal) {
+              finalTranscript += transcript;
+            } else {
+              setMessage((prev) => transcript);
+            }
+          }
+
+          if (finalTranscript) {
+            setMessage(finalTranscript);
+          }
+        };
+
+        recognitionInstance.onend = () => {
+          if (isRecording) {
+            recognitionInstance.start();
+          }
+        };
+
+        setRecognition(recognitionInstance);
+      }
+    }
+  }, []);
+
+  // Play receive tone when messages change (if the last message isn't from "You")
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -58,9 +170,20 @@ const Chat = ({
     }
     setAnimateRadio(true);
     const timer = setTimeout(() => setAnimateRadio(false), 3000);
-    return () => clearTimeout(timer);
-  }, [messages, chatMode]);
 
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.characterName !== "You") {
+        receiveMessageAudioRef.current
+          .play()
+          .catch((error) => console.log("Receive tone error:", error));
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [messages]);
+
+  // Reset loading state after a timeout
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -73,9 +196,52 @@ const Chat = ({
     if (message.trim()) {
       setLoading(true);
       onSendMessage(message.trim());
+
+      sendMessageAudioRef.current
+        .play()
+        .catch((error) => console.log("Send tone error:", error));
       setMessage("");
     }
   };
+
+  const toggleRecording = () => {
+    if (!recognition) return;
+
+    if (isRecording) {
+      // Stop recording
+      recognition.stop();
+      voiceEndAudioRef.current
+        .play()
+        .catch((error) => console.log("Voice end tone error:", error));
+
+      // Send the message if there's content
+      if (message.trim()) {
+        setLoading(true);
+        onSendMessage(message.trim());
+        sendMessageAudioRef.current
+          .play()
+          .catch((error) => console.log("Send tone error:", error));
+        setMessage("");
+      }
+    } else {
+      // Start recording
+      recognition.start();
+      voiceStartAudioRef.current
+        .play()
+        .catch((error) => console.log("Voice start tone error:", error));
+    }
+
+    setIsRecording(!isRecording);
+  };
+
+  // Auto-activate voice mode when chatMode is VOICE
+  useEffect(() => {
+    if (chatMode === "VOICE" && recognition && !isRecording && !disabled) {
+      toggleRecording();
+    }
+  }, [chatMode, recognition, disabled]);
+
+  const isVoice = chatMode === "VOICE";
 
   return (
     <div
@@ -136,6 +302,27 @@ const Chat = ({
               </div>
             </div>
           )}
+
+          {/* Voice recording indicator */}
+          {isRecording && (
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm text-green-600">
+                  Voice
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-gray-400 break-words">
+                  Listening...
+                </p>
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-75"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-150"></div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
@@ -149,16 +336,31 @@ const Chat = ({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={disabled}
-              placeholder="Just ask..."
+              placeholder={isRecording ? "Listening..." : "Just ask..."}
               className="flex-1 px-4 py-2 rounded-lg bg-transparent border border-navy-600/20 text-gray-400 placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-300"
             />
-            <button
-              type="submit"
-              disabled={disabled || !message.trim()}
-              className="p-2 rounded-lg bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-navy-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <IoSend size={20} />
-            </button>
+            {chatMode === "VOICE" ? (
+              <button
+                type="button"
+                onClick={toggleRecording}
+                disabled={disabled || !recognition}
+                className={`p-2 rounded-lg ${
+                  isRecording
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-green-600 hover:bg-green-700"
+                } text-white focus:outline-none focus:ring-2 focus:ring-navy-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={disabled || !message.trim() || isVoice}
+                className="p-2 rounded-lg bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-navy-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <IoSend size={20} />
+              </button>
+            )}
           </div>
         </form>
       </div>

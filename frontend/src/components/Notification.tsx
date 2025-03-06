@@ -217,9 +217,13 @@ const Notification = ({
         {/* Metadata */}
         {metadata && (
           <div
-            className={`mt-1 p-2 rounded-md bg-muted/50 text-xs font-mono w-full text-white ${
+            className={`mt-1 p-2 rounded-md bg-muted/50 text-xs font-mono w-full ${
               pixelify_sans.className
-            }  font-medium ${eventName ? getEventTagClass(eventName) : ""}`}
+            }  font-medium ${
+              eventName
+                ? `${getEventTagClass(eventName)} text-white`
+                : "text-black"
+            }`}
           >
             {eventName === "image_created" && metadata.url && (
               <img
@@ -259,10 +263,10 @@ const Notification = ({
             <div className="grid grid-cols-1 gap-1">
               {Object.entries(metadata).map(([key, value]) => (
                 <div key={key} className="flex items-center gap-2">
-                  <span className="text-white font-medium capitalize shrink-0">
+                  <span className="font-medium capitalize shrink-0">
                     {key.replace(/([A-Z])/g, " $1").toLowerCase()}:
                   </span>
-                  <span className="text-white truncate">
+                  <span className="truncate">
                     {renderMetadataValue(key, value)}
                   </span>
                 </div>

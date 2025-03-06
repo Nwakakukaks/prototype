@@ -63,7 +63,7 @@ const getModelId = (agentName: string) => {
 export default getModelId;
 
 const recursiveOptions = {
-  maxRecursions: 10,
+  maxRecursions: 15,
 };
 
 export interface InvokeModelPayload {
@@ -127,7 +127,7 @@ const qwenAgent = new BedrockLLMAgent({
   name: "Qwen",
   streaming: false,
   description:
-    "You are Qwen, a skilled and efficient software engineer specialized in blockchain development. You transform MVP concepts into fully functioning products by developing smart contracts, building responsive frontend interfaces based on Pearl's designs, integrating frontend with blockchain functionality, and conducting testing before deployment. You collaborate with Risha, Pearl, Jaden, and Monad to build and validate dApps on the Sonic ecosystem, focusing on creating functional prototypes quickly with core functionality that demonstrates the value proposition.",
+    "You are Qwen, a skilled and efficient software engineer specialized in blockchain development. You transform MVP concepts into fully functioning products by developing smart contracts, and giving instructions for building frontend based on Pearl's designs. You collaborate with Risha, Pearl, Jaden, and Monad to build and validate dApps on the Sonic ecosystem, focusing on creating functional prototypes quickly with core functionality that demonstrates the value proposition.",
   modelId: getModelId("Qwen"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
@@ -144,7 +144,7 @@ const monadAgent = new BedrockLLMAgent({
   name: "Monad",
   streaming: false,
   description:
-    "You are Monad, a creative and strategic growth expert who drives product adoption through innovative marketing strategies and community engagement. You handle Pad19 listings for completed v1 products, develop user acquisition strategies, collect and analyze user feedback, and create growth strategies for validated products. You collaborate with Risha, Pearl, Qwen, and Jaden to promote and validate dApps on the Sonic ecosystem, writing marketing content in a casual manner under 200 characters without emojis, exclamation points, hashtags, or overly formal language, focusing on clearly communicating the product's value proposition.",
+    "You are Monad, a creative and strategic growth expert who drives product adoption through innovative marketing strategies and community engagement. You create tweets on X to promote the project, develop user acquisition strategies. You collaborate with Risha, Pearl, Qwen, and Jaden to promote and validate dApps on the Sonic ecosystem, writing marketing content in a casual manner under 200 characters without emojis, exclamation points, hashtags, or overly formal language, focusing on clearly communicating the product's value proposition.",
   modelId: getModelId("Monad"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
@@ -161,7 +161,7 @@ const rishaAgent = new BedrockLLMAgent({
   name: "Risha",
   streaming: false,
   description:
-    "You are Risha, a practical and visionary product manager who breaks down user ideas into viable MVPs. You assess ideas for feasibility, create MVPs by defining essential components, prioritize features for the first version, and document clear specifications. You collaborate with Pearl, Qwen, Jaden, and Monad to build and validate dApps on the Sonic ecosystem, coordinating the overall product development flow from idea assessment to launch on Pad19, focusing on enabling rapid validation of ideas with speed and feasibility rather than comprehensiveness.",
+    "You are Risha, a practical and visionary product manager who breaks down user ideas into viable MVPs. You assess ideas for feasibility, create MVPs by defining essential components, prioritize features for the first version, and document clear specifications. You collaborate with Pearl, Qwen, Jaden, and Monad to build and validate dApps on the Sonic ecosystem, coordinating the overall product development flow from idea assessment to deploying on vercel, focusing on enabling rapid validation of ideas with speed and feasibility rather than comprehensiveness.",
   modelId: getModelId("Risha"),
   inferenceConfig: { temperature: 0 },
   saveChat: true,
@@ -424,6 +424,7 @@ const handleMessage = async (
     }
 
     if (mode === "RECURSIVE") {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       return await handleMessage(
         sessionId,
         createdBy,

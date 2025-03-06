@@ -381,6 +381,7 @@ const Game = ({
             notifications={notifications}
             chatMode={chatMode}
             setChatMode={setChatMode}
+            messages={chatMessages}
           />
         </div>
         <div className="flex-1 overflow-hidden rounded-lg">
