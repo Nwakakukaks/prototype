@@ -5,7 +5,8 @@
 import { pixelify_sans } from "@/app/fonts";
 import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
-import { Loader2, RadioTowerIcon, Mic, MicOff } from "lucide-react";
+import { Loader2, Mic, MicOff } from "lucide-react";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { CustomConnectButton } from "./ConnectButton";
 import LiveView from "./LiveView";
 
@@ -23,63 +24,6 @@ interface ChatProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
   notifications: any[];
-}
-
-// Define types for Web Speech API
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionResultList {
-  readonly length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  readonly length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-  isFinal?: boolean;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
-
-interface SpeechGrammar {
-  src: string;
-  weight: number;
-}
-
-interface SpeechGrammarList {
-  readonly length: number;
-  item(index: number): SpeechGrammar;
-  [index: number]: SpeechGrammar;
-  addFromURI(src: string, weight?: number): void;
-  addFromString(string: string, weight?: number): void;
-}
-
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  maxAlternatives: number;
-  start(): void;
-  stop(): void;
-  abort(): void;
-  onstart: (event: Event) => void;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onerror: (event: Event) => void;
-  onend: (event: Event) => void;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition?: new () => SpeechRecognition;
-    webkitSpeechRecognition?: new () => SpeechRecognition;
-  }
 }
 
 const characterColors: { [key: string]: string } = {
@@ -105,16 +49,8 @@ const Chat = ({
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Reasoning...");
   const [animateRadio, setAnimateRadio] = useState(false);
-
-  // Voice recording states
-  const [isRecording, setIsRecording] = useState(false);
-  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
-    null
-  );
-  const [transcript, setTranscript] = useState("");
   const [recognitionError, setRecognitionError] = useState<string | null>(null);
-  const [recognitionAttempts, setRecognitionAttempts] = useState(0);
-  const maxRetryAttempts = 3;
+  const isVoiceMode = chatMode === "VOICE";
 
   // Audio references for sending and receiving messages
   const sendMessageAudioRef = useRef(new Audio("/message-sent.mp3"));
@@ -122,109 +58,41 @@ const Chat = ({
   const voiceStartAudioRef = useRef(new Audio("/message-sent.mp3"));
   const voiceEndAudioRef = useRef(new Audio("/message-sent.mp3"));
 
-  // Initialize speech recognition
+  // Speech recognition setup using react-speech-recognition
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+    isMicrophoneAvailable
+  } = useSpeechRecognition();
+
+  // Update message when transcript changes
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognitionAPI =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (transcript) {
+      setMessage(transcript);
+    }
+  }, [transcript]);
 
-      if (SpeechRecognitionAPI) {
-        const recognitionInstance = new SpeechRecognitionAPI();
-
-        recognitionInstance.continuous = false; // Changed to false to avoid issues with continuous recognition
-        recognitionInstance.interimResults = true;
-        recognitionInstance.lang = "en-US";
-
-        recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
-          setRecognitionError(null);
-
-          let finalText = "";
-          let interimText = "";
-
-          // Process all results
-          for (let i = 0; i < event.results.length; i++) {
-            const result = event.results[i];
-            const text = result[0].transcript;
-
-            if (result.isFinal) {
-              finalText += text + " ";
-            } else {
-              interimText += text;
-            }
-          }
-
-          // Use either final or interim text based on what's available
-          const currentText = finalText || interimText;
-          if (currentText.trim()) {
-            setMessage(currentText.trim());
-            setTranscript(currentText.trim());
-          }
-        };
-
-        recognitionInstance.onstart = () => {
-          console.log("Voice recognition started");
-          setRecognitionError(null);
-        };
-
-        recognitionInstance.onerror = (event: any) => {
-          const errorType = event.error;
-          console.error("Recognition error", event);
-          setRecognitionError(errorType);
-
-          // Automatic retry for network errors, with a limit
-          if (
-            errorType === "network" &&
-            recognitionAttempts < maxRetryAttempts
-          ) {
-            setRecognitionAttempts((prev) => prev + 1);
-            // Wait a bit before retrying
-            setTimeout(() => {
-              if (isRecording) {
-                try {
-                  recognitionInstance.stop();
-                } catch (e) {
-                  console.log("Error stopping before retry:", e);
-                }
-                setTimeout(() => {
-                  try {
-                    recognitionInstance.start();
-                    console.log("Retrying speech recognition...");
-                  } catch (e) {
-                    console.log("Error restarting:", e);
-                  }
-                }, 300);
-              }
-            }, 1000);
-          }
-        };
-
-        recognitionInstance.onend = () => {
-          console.log("Voice recognition ended");
-
-          // If we're supposed to be recording and there was no error, restart
-          if (isRecording && !recognitionError) {
-            try {
-              // Add a small delay before restarting to avoid rapid start/stop cycles
-              setTimeout(() => {
-                recognitionInstance.start();
-                console.log("Restarting speech recognition");
-              }, 300);
-            } catch (e) {
-              console.error("Failed to restart recognition:", e);
-              setIsRecording(false);
-            }
-          } else if (recognitionError) {
-            // If we had an error, stop recording
-            setIsRecording(false);
-          }
-        };
-
-        setRecognition(recognitionInstance);
-      } else {
-        console.error("Speech Recognition API not supported in this browser");
+  // Start/stop listening based on chat mode and disabled status
+  useEffect(() => {
+    if (isVoiceMode && !disabled) {
+      if (!listening && browserSupportsSpeechRecognition) {
+        try {
+          startListening();
+        } catch (error) {
+          console.error("Error starting recognition:", error);
+          setRecognitionError("Failed to start recognition");
+        }
+      }
+    } else if (listening) {
+      try {
+        stopListening(false);
+      } catch (error) {
+        console.error("Error stopping recognition:", error);
       }
     }
-  }, []);
+  }, [isVoiceMode, disabled, browserSupportsSpeechRecognition]);
 
   // Play receive tone when messages change (if the last message isn't from "You")
   useEffect(() => {
@@ -257,77 +125,38 @@ const Chat = ({
     return () => clearTimeout(timer);
   }, [messages]);
 
-  // Effect to monitor chatMode changes
+  // Clean up speech recognition on component unmount
   useEffect(() => {
-    // When switching to VOICE mode, start recording if not already doing so
-    if (chatMode === "VOICE" && recognition && !isRecording && !disabled) {
-      startRecording();
-    }
-    // When switching away from VOICE mode, stop recording
-    else if (chatMode !== "VOICE" && recognition && isRecording) {
-      stopRecording(true); // true means send the message if there is one
-    }
-  }, [chatMode, recognition, disabled]);
+    return () => {
+      if (listening) {
+        SpeechRecognition.stopListening();
+      }
+    };
+  }, [listening]);
 
-  // Reset recognition attempts when recording stops
-  useEffect(() => {
-    if (!isRecording) {
-      setRecognitionAttempts(0);
-    }
-  }, [isRecording]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (message.trim()) {
-      setLoading(true);
-      onSendMessage(message.trim());
-
-      sendMessageAudioRef.current
-        .play()
-        .catch((error) => console.log("Send tone error:", error));
-      setMessage("");
-      setTranscript("");
-    }
-  };
-
-  const startRecording = () => {
-    if (!recognition) return;
-
+  const startListening = () => {
     try {
-      recognition.start();
       voiceStartAudioRef.current
         .play()
         .catch((error) => console.log("Voice start tone error:", error));
-      setIsRecording(true);
+      
+      SpeechRecognition.startListening({ 
+        continuous: true,
+        language: 'en-US'
+      });
+      
       setRecognitionError(null);
       console.log("Started recording");
     } catch (error) {
-      console.error("Error starting recognition:", error);
-
-      // If already started, stop and restart
-      try {
-        recognition.stop();
-        setTimeout(() => {
-          try {
-            recognition.start();
-            setIsRecording(true);
-          } catch (innerError) {
-            console.error("Failed to restart recognition:", innerError);
-            setIsRecording(false);
-          }
-        }, 300);
-      } catch (stopError) {
-        console.error("Failed to stop recognition before restart:", stopError);
-        setIsRecording(false);
-      }
+      console.error("Error in startListening:", error);
+      setRecognitionError("Failed to start microphone");
     }
   };
 
-  const stopRecording = (sendCurrentMessage = false) => {
-    if (!recognition) return;
-
+  const stopListening = (sendCurrentMessage = false) => {
     try {
-      recognition.stop();
+      SpeechRecognition.stopListening();
+      
       voiceEndAudioRef.current
         .play()
         .catch((error) => console.log("Voice end tone error:", error));
@@ -340,27 +169,54 @@ const Chat = ({
           .play()
           .catch((error) => console.log("Send tone error:", error));
         setMessage("");
-        setTranscript("");
+        resetTranscript();
       }
-
-      setIsRecording(false);
-      setRecognitionError(null);
+      
       console.log("Stopped recording");
     } catch (error) {
       console.error("Error stopping recognition:", error);
-      setIsRecording(false);
     }
   };
 
-  const toggleRecording = () => {
-    if (isRecording) {
-      stopRecording(true);
+  const toggleListening = () => {
+    if (listening) {
+      stopListening(true);
     } else {
-      startRecording();
+      startListening();
     }
   };
 
-  const isVoice = chatMode === "VOICE";
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (message.trim()) {
+      setLoading(true);
+      onSendMessage(message.trim());
+
+      sendMessageAudioRef.current
+        .play()
+        .catch((error) => console.log("Send tone error:", error));
+      setMessage("");
+      resetTranscript();
+    }
+  };
+
+  // Render unsupported browser message if speech recognition isn't available
+  if (isVoiceMode && !browserSupportsSpeechRecognition) {
+    return (
+      <div className="p-4 text-red-500 bg-red-100 rounded-lg">
+        Your browser doesn't support speech recognition. Please try a different browser like Chrome.
+      </div>
+    );
+  }
+
+  // Render microphone permission error if microphone isn't available
+  if (isVoiceMode && !isMicrophoneAvailable) {
+    return (
+      <div className="p-4 text-yellow-700 bg-yellow-100 rounded-lg">
+        Microphone access is required for voice mode. Please check your browser permissions.
+      </div>
+    );
+  }
 
   return (
     <div
@@ -423,7 +279,7 @@ const Chat = ({
           )}
 
           {/* Voice recording indicator */}
-          {isRecording && (
+          {listening && (
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-sm text-green-600">
@@ -433,11 +289,7 @@ const Chat = ({
               <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-400 break-words">
                   {recognitionError
-                    ? `Error: ${recognitionError}. ${
-                        recognitionAttempts < maxRetryAttempts
-                          ? "Retrying..."
-                          : "Please try again."
-                      }`
+                    ? `Error: ${recognitionError}. Please try again.`
                     : `Listening...${message ? `: "${message}"` : ""}`}
                 </p>
                 <div className="flex space-x-1">
@@ -466,22 +318,22 @@ const Chat = ({
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              disabled={disabled || (isVoice && isRecording)}
-              placeholder={isRecording ? "Listening..." : "Just ask..."}
+              disabled={disabled || (isVoiceMode && listening)}
+              placeholder={listening ? "Listening..." : "Just ask..."}
               className="flex-1 px-4 py-2 rounded-lg bg-transparent border border-navy-600/20 text-gray-400 placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-300"
             />
             {chatMode === "VOICE" ? (
               <button
                 type="button"
-                onClick={toggleRecording}
-                disabled={disabled || !recognition}
+                onClick={toggleListening}
+                disabled={disabled || !browserSupportsSpeechRecognition}
                 className={`p-2 rounded-lg ${
-                  isRecording
+                  listening
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-green-600 hover:bg-green-700"
                 } text-white focus:outline-none focus:ring-2 focus:ring-navy-300 disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
+                {listening ? <MicOff size={20} /> : <Mic size={20} />}
               </button>
             ) : (
               <button

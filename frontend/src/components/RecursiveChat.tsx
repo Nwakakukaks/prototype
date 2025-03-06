@@ -56,7 +56,7 @@ const GameControlPanel = ({
   notifications,
   messages,
 }: GameControlPanelProps) => {
-  const [bgmVolume, setBgmVolume] = useState(30);
+  const [bgmVolume, setBgmVolume] = useState(15);
   const [sfxVolume, setSfxVolume] = useState(50);
   const [isBgmMuted, setIsBgmMuted] = useState(false);
   const [isSfxMuted, setIsSfxMuted] = useState(false);
@@ -178,24 +178,13 @@ const GameControlPanel = ({
       const agentId = latestMessage.characterName;
       const text = latestMessage.message;
 
+      if (latestMessage.characterName !== "Risha" || "Qwen" || "Monad" || "Jaden" || "Pearl") {
+        return;
+      }
+
       speakMessage(agentId, text);
     }
   }, [messages, chatMode]);
-
-  // const formatMessage = (data: any): string => {
-  //   switch (data.eventName) {
-  //     case "wallet_created":
-  //       return `${data.characterId}'s wallet was created`;
-  //     case "funds_requested":
-  //       return `${data.characterId} requested ${formatEther(
-  //         data.metadata.requestedAmount
-  //       )} S`;
-  //     case "custom":
-  //       return data.message;
-  //     default:
-  //       return `System event: ${data.eventName}`;
-  //   }
-  // };
 
   const speakMessage = (agentId: string, text: string) => {
     if (isSfxMuted) {
