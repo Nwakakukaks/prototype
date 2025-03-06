@@ -22,7 +22,7 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import "dotenv/config";
 
-export class SonicStack extends cdk.Stack {
+export class ProtoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -37,7 +37,7 @@ export class SonicStack extends cdk.Stack {
     );
     console.log("DOMAIN_NAME:", process.env.DOMAIN_NAME);
     console.log("STAGE:", process.env.STAGE);
-    console.log("SONICSCAN_API_KEY:", process.env.SONICSCAN_API_KEY);
+    console.log("EXPLORER_API_KEY:", process.env.EXPLORER_API_KEY);
     console.log("WETH_ADDRESS:", process.env.WETH_ADDRESS);
     console.log("USDC_ADDRESS:", process.env.USDC_ADDRESS);
     console.log("TWITTER_APP_KEY:", process.env.TWITTER_APP_KEY);
@@ -66,7 +66,7 @@ export class SonicStack extends cdk.Stack {
       "SONIC_RPC_URL",
       "UNISWAP_V2_ROUTER_ADDRESS",
       "STAGE",
-      "SONICSCAN_API_KEY",
+      "EXPLORER_API_KEY",
       "WETH_ADDRESS",
       "DOMAIN_NAME",
       "TWITTER_APP_KEY",
@@ -195,7 +195,7 @@ export class SonicStack extends cdk.Stack {
         .READ_TWITTER_ACCESS_ACCESS_SECRET as string,
 
       // SonicScan
-      SONICSCAN_API_KEY: process.env.SONICSCAN_API_KEY as string,
+      EXPLORER_API_KEY: process.env.EXPLORER_API_KEY as string,
 
       // Pinata
       PINATA_API_KEY: process.env.PINATA_API_KEY as string,

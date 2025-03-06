@@ -2,12 +2,12 @@
 import * as cdk from 'aws-cdk-lib';
 import 'dotenv/config';
 import 'source-map-support/register';
-import { SonicStack } from '../lib/backend-stack';
+import { ProtoStack } from '../lib/backend-stack';
 
 const account = process.env.AWS_ACCOUNT
 
 const app = new cdk.App();
-new SonicStack(app, 'SonicStack', {
+new ProtoStack(app, 'ProtoStack', {
   env: {
     account: account,
     region: 'us-east-1',

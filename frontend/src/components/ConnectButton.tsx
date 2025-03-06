@@ -38,7 +38,7 @@ export function CustomConnectButton() {
                 return (
                   <Button
                     onClick={openConnectModal}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Connect Wallet
                   </Button>
@@ -49,7 +49,7 @@ export function CustomConnectButton() {
                 return (
                   <Button
                     onClick={openChainModal}
-                    className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-base"
                   >
                     Wrong Network
                   </Button>

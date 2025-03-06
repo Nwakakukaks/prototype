@@ -51,7 +51,7 @@ const GetStartedPage = () => {
           <Card className="relative group hover:shadow-xl transition-shadow duration-300 bg-card/90">
             <CardHeader className="pb-4">
               <div className="mb-4">
-                <Code className="h-12 w-12 text-orange-600" />
+                <Code className="h-12 w-12 text-blue-600" />
               </div>
               <CardTitle className="text-2xl text-gray-800">
                 For Developers
@@ -64,19 +64,19 @@ const GetStartedPage = () => {
             <CardContent>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start">
-                  <ChevronRight className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">
                     Describe your idea and let our AI agents create a working v1
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <ChevronRight className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">
                     Get immediate feedback through Pad19 launchpad
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <ChevronRight className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">
                     Build only validated ideas, saving time and resources
                   </span>
@@ -85,7 +85,7 @@ const GetStartedPage = () => {
               <Button
                 size={"lg"}
                 onClick={handleNavigate}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white group-hover:translate-y-[-2px] transition-transform duration-300 "
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:translate-y-[-2px] transition-transform duration-300 "
               >
                 Start Building
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -97,7 +97,7 @@ const GetStartedPage = () => {
           <Card className="relative group hover:shadow-xl transition-shadow duration-300 bg-card/90">
             <CardHeader className="pb-4">
               <div className="mb-4">
-                <Lightbulb className="h-12 w-12 text-orange-600" />
+                <Lightbulb className="h-12 w-12 text-blue-600" />
               </div>
               <CardTitle className="text-2xl text-gray-800">
                 For Non-Technical
@@ -109,21 +109,21 @@ const GetStartedPage = () => {
             <CardContent>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start">
-                  <ChevronRight className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">
                     Chat with AI agents to create your dApp prototype
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <ChevronRight className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">
                     Earn revenue share when your idea succeeds
                   </span>
                 </li>
                 <li className="flex items-start">
-                  <ChevronRight className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">
-                    Get support from Sonic developer team to further successful
+                    Get support from Electronuem developer team to further successful
                     ideas
                   </span>
                 </li>
@@ -131,7 +131,7 @@ const GetStartedPage = () => {
               <Button
                 size={"lg"}
                 onClick={handleNavigate}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white group-hover:translate-y-[-2px] transition-transform duration-300"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:translate-y-[-2px] transition-transform duration-300"
               >
                 Chat with Agents
                 <ArrowRight className="ml-2 h-4 w-4" />

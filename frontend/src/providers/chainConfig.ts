@@ -2,11 +2,11 @@ import { defineChain } from 'viem'
 
 export const sonicTestnet = defineChain({
   id: 57054,
-  name: 'Sonic Blaze Testnet',
-  network: 'sonic-testnet',
+  name: 'Electronuem Testnet',
+  network: 'electronuem-testnet',
   nativeCurrency: {
     decimals: 18,
-    name: 'Sonic Testnet',
+    name: 'Electronuem Testnet',
     symbol: 'S',
   },
   rpcUrls: {
@@ -19,7 +19,7 @@ export const sonicTestnet = defineChain({
   },
   blockExplorers: {
     default: {
-      name: 'Sonic Explorer',
+      name: 'Electronuem Explorer',
       url: 'https://testnet.sonicscan.org'
     }
   },

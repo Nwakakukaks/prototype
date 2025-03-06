@@ -1,4 +1,4 @@
-# VersionOne: How Smart Builders Build
+# Prototype.ai: How Smart Builders Build
 
 ## Current Development Challenges
 
@@ -6,7 +6,7 @@ In the world of traditional development, builders often face a harsh reality. Th
 
 Take, for example, the \$30M startup that spent two years building a product, only to see it flop due to lack of validation before launch. The startup’s failure was a stark reminder of how common this problem is across the blockchain industry. (Sources: [link 1](#), [link 2](#))
 
-## Introducing VersionOne&#x20;
+## Introducing Prototype.ai&#x20;
 
 Instead of building in the dark, builders quickly build v1 and validate their ideas with the help of AI agents. It's as simply as builders describing their idea, and the platform’s agents swing into action, building a working v1 in no time.
 
@@ -14,15 +14,15 @@ The v1 is then listed on Pad19 (our idea launchpad), where users can interact wi
 
 ## No One Left Behind: Non-Technical Builders Matter
 
-VersionOne isn’t just for coders. Non-technical users can also bring their ideas to life by chatting away with the agents that quickly launch v1 When their idea finds traction amongst users (certain usage quota) the Sonic Dev. team is flagged and they decide whether push ahead with the idea and fully develop it on the Sonic ecosystem.
+Prototype.ai isn’t just for coders. Non-technical users can also bring their ideas to life by chatting away with the agents that quickly launch v1 When their idea finds traction amongst users (certain usage quota) the Electronuem Dev. team is flagged and they decide whether push ahead with the idea and fully develop it on the Electronuem ecosystem.
 
-## Why VersionOne? Everyone Wins 🏅
+## Why Prototype.ai? Everyone Wins 🏅
 
 **_For Builders:_** Build, launch and validate your ideas quickly, commit only to building ideas with sufficient traction. Save development time and money.
 
 **_For Non-Technical Users_**: Non-technical users can still submit their ideas and, if successfully built, earn a portion of the dApp's revenue throughout its lifecycle.
 
-**_For the Sonic Ecosystem:_** Proven, user-approved concepts get developed, improving the overall Sonic ecosystem while rewarding both developers and idea contributors.
+**_For the Electronuem Ecosystem:_** Proven, user-approved concepts get developed, improving the overall Electronuem ecosystem while rewarding both developers and idea contributors.
 
 ### **How It Works**
 
@@ -50,13 +50,13 @@ We have built a multi-agent orchestration environment that handles intent routin
 
 The agents collaborate through recursive chat systems to share knowledge and coordinate actions. For example:
 
-User Submits Idea: A non-technical or technical user submits their idea to VersionOne.
+User Submits Idea: A non-technical or technical user submits their idea to Prototype.ai.
 
 MVP Creation: Risha builds a functional MVP based on the submitted concept and creates a project document on Notion.so outline the project scope and deliverables then hands off to Pearl for designing the user interface.
 
 Pad19 Listing: Pearl designs the interface and also lists the project on "pad19", our idea launchpad, where users can interact with the prototype, provide feedback, and rate it ⭐️
 
-Smart Contract Integration: Qwen takes the MVP and deploys the necessary smart contracts on the Sonic blockchain, ensuring all functionality works on-chain and creates the nextjs frontend to connect with the deployed contract.
+Smart Contract Integration: Qwen takes the MVP and deploys the necessary smart contracts on the Electronuem blockchain, ensuring all functionality works on-chain and creates the nextjs frontend to connect with the deployed contract.
 
 Marketing and Launch: Monad create tweets to markets the MVP on X and also to drive buzz and awareness about the project.
 
@@ -70,7 +70,7 @@ The system works autonomously, requiring only high-level instructions from users
 
 This autonomous coordination delivers faster results while reducing the need for manual intervention, making complex dev. operations accessible through simple natural language interactions.
 
-**Benefits of VersionOne:**
+**Benefits of Prototype.ai:**
 
 - **Multi-Agent System**: Four agents collaborating to build the perfect V1.
 - **Quick Prototyping**: Test your idea in real time with user feedback.
@@ -82,16 +82,16 @@ This autonomous coordination delivers faster results while reducing the need for
 
 **Q1** - Access to Beta
 
-- Limited access to the VersionOne beta platform at [insert link].
+- Limited access to the Prototype.ai beta platform at [insert link].
 - Sign up for the waitlist for the mainnet launch.
 
 **Product Hunt Launch**
 
-- VersionOne is launching soon on Product Hunt. Please show your support with an upvote 🙏.
+- Prototype.ai is launching soon on Product Hunt. Please show your support with an upvote 🙏.
 
 ## Project Tagline
 
-VersionOne: AI-powered multi-agent system to build and launch the v1 of any dApp. Builders commit only to validated ideas, saving dev time and funding.
+Prototype.ai: AI-powered multi-agent system to build and launch the v1 of any dApp. Builders commit only to validated ideas, saving dev time and funding.
 
 ## Sample prompts
 

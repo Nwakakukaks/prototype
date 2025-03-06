@@ -73,8 +73,8 @@ export async function deployContract({ sessionId, createdBy, characterId, tokenN
 
         logConsole.info(`Waiting for deployedContract to be confirmed`)
 
-        if (network === "sonic") {
-            await sendCharacterMessage(characterId, sessionId, docClient, `Cool, i've deployed it now just verifying it on Sonicscan.`)
+        if (network === "electronuem") {
+            await sendCharacterMessage(characterId, sessionId, docClient, `Cool, i've deployed it now just verifying it on the explorer.`)
             await verifyERC20Contract(deployedContractAddress, process.env.CHAIN_ID as string, [tokenName, tokenSymbol, totalSupply], characterId, sessionId);
         }
 
@@ -145,7 +145,7 @@ const verifyERC20Contract = async (
         ).slice(2); // Remove '0x' prefix
 
         const verificationBody = {
-            apikey: process.env.SONICSCAN_API_KEY as string,
+            apikey: process.env.EXPLORER_API_KEY as string,
             module: "contract",
             action: "verifysourcecode",
             contractaddress: contractAddress,
@@ -161,7 +161,7 @@ const verifyERC20Contract = async (
 
         logConsole.info('Prepared verification request body');
 
-        logConsole.info('Sending verification request to Sonicscan');
+        logConsole.info('Sending verification request to the explorer');
         const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
@@ -183,7 +183,7 @@ const verifyERC20Contract = async (
 
                 logConsole.info('Checking verification status');
                 const checkResponse = await fetch(
-                    `${apiEndpoint}?apikey=${process.env.SONICSCAN_API_KEY as string}&module=contract&action=checkverifystatus&guid=${guid}`
+                    `${apiEndpoint}?apikey=${process.env.EXPLORER_API_KEY as string}&module=contract&action=checkverifystatus&guid=${guid}`
                 );
                 verificationStatus = await checkResponse.json();
                 logConsole.info(`Verification status check`);
@@ -192,7 +192,7 @@ const verifyERC20Contract = async (
 
             logConsole.info('Verification process completed');
 
-            await sendCharacterMessage(characterId, sessionId, docClient, `The contract has been verified on Sonicscan.`);
+            await sendCharacterMessage(characterId, sessionId, docClient, `The contract has been verified on the explorer.`);
             return {
                 success: verificationStatus.status === "1",
                 message: verificationStatus.result

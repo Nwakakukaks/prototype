@@ -134,7 +134,7 @@ function StyleSelector({
               {CHARACTER_PRESETS[current].name}
             </span>
             <span
-              className={`${pixelify_sans.className} text-base text-orange-600 font-medium text-center`}
+              className={`${pixelify_sans.className} text-base text-blue-600 font-medium text-center`}
             >
               {CHARACTER_PRESETS[current].role}
             </span>
@@ -302,7 +302,7 @@ function CharacterSelect() {
 
         <SheetFooter>
           <button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg disabled:opacity-50"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg disabled:opacity-50"
             onClick={handleCreate}
             disabled={isLoading}
           >

@@ -1,3 +1,3 @@
 ## RequestForStartup (RFS)
 
-Hackathon project for the Sonic DeFAI Hackathon.
+Hackathon project for the Electronuem DeFAI Hackathon.

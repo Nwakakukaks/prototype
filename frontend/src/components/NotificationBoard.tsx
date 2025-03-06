@@ -26,7 +26,7 @@ const NotificationBoard = ({ notifications }: NotificationBoardProps) => {
       case "prd_created":
         return `Risha crafted a PRD on Notion outlining milestones, objectives, and deliverables—a concise roadmap from concept to execution. 📝`;
       case "listed_on_pad19":
-        return `Pearl published a pad19 listing for the project, enabling quick testing, feedback, and early validation within the Sonic Blockchain community. 📋`;
+        return `Pearl published a pad19 listing for the project, enabling quick testing, feedback, and early validation within the Electronuem Blockchain community. 📋`;
       case "tweet_created":
         return `Monad tweeted about the project on X to generate buzz, drive engagement, and attract early adopters by showcasing its unique value. 🐦`;
       case "research_completed":
@@ -77,7 +77,7 @@ const NotificationBoard = ({ notifications }: NotificationBoardProps) => {
   return (
     <div className="w-full h-[60vh] flex flex-col p-4 overflow-y-auto">
       <h2
-        className={`font-semibold tracking-tight text-lg text-orange-600 mb-4 ${pixelify_sans.className}`}
+        className={`font-semibold tracking-tight text-lg text-blue-600 mb-4 ${pixelify_sans.className}`}
       >
         System Events
       </h2>

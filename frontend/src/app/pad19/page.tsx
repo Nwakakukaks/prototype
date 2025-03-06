@@ -123,13 +123,13 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
 
     <div className="flex items-center justify-between pt-4 px-4 border-t border-gray-100">
       <div className="flex items-center gap-1">
-        <Users size={16} className="text-orange-500" />
+        <Users size={16} className="text-blue-500" />
         <span className="text-sm font-medium text-gray-600">
           {startup.users}
         </span>
       </div>
       <div className="flex items-center gap-1">
-        <Star size={16} className="text-orange-500" />
+        <Star size={16} className="text-blue-500" />
         <span className="text-sm font-medium text-gray-600">
           {startup.stars}
         </span>
@@ -225,10 +225,10 @@ const LaunchpadPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="">
             <h1 className="text-3xl font-bold text-gray-200">
-              Sonic Launchpad
+              Electronuem Launchpad
             </h1>
             <p className="text-gray-300 mt-2">
-              Discover and track the latest startups launching on the Sonic
+              Discover and track the latest startups launching on the Electronuem
               Ecosystem
             </p>
           </div>

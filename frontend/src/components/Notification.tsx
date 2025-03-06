@@ -51,7 +51,7 @@ const Notification = ({
       case "research_completed":
         return "bg-black text-white";
       default:
-        return "bg-orange-600 text-white";
+        return "bg-blue-600 text-white";
     }
   };
 
