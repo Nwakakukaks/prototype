@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -180,20 +182,20 @@ const GameControlPanel = ({
     }
   }, [messages, chatMode]);
 
-  const formatMessage = (data: any): string => {
-    switch (data.eventName) {
-      case "wallet_created":
-        return `${data.characterId}'s wallet was created`;
-      case "funds_requested":
-        return `${data.characterId} requested ${formatEther(
-          data.metadata.requestedAmount
-        )} S`;
-      case "custom":
-        return data.message;
-      default:
-        return `System event: ${data.eventName}`;
-    }
-  };
+  // const formatMessage = (data: any): string => {
+  //   switch (data.eventName) {
+  //     case "wallet_created":
+  //       return `${data.characterId}'s wallet was created`;
+  //     case "funds_requested":
+  //       return `${data.characterId} requested ${formatEther(
+  //         data.metadata.requestedAmount
+  //       )} S`;
+  //     case "custom":
+  //       return data.message;
+  //     default:
+  //       return `System event: ${data.eventName}`;
+  //   }
+  // };
 
   const speakMessage = (agentId: string, text: string) => {
     if (isSfxMuted) {

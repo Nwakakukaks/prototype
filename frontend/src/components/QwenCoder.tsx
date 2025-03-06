@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/no-assign-module-variable */
+
+
 import React, { useState, useEffect, ReactElement } from "react";
 import { transform } from "@babel/standalone";
 import { pixelify_sans } from "@/app/fonts";

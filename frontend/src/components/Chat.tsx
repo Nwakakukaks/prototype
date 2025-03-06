@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 "use client";
 
 import { pixelify_sans } from "@/app/fonts";
@@ -73,7 +75,6 @@ interface SpeechRecognition extends EventTarget {
   onend: (event: Event) => void;
 }
 
-// Declare global types for the Web Speech API
 declare global {
   interface Window {
     SpeechRecognition?: new () => SpeechRecognition;
@@ -110,6 +111,10 @@ const Chat = ({
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(
     null
   );
+  const [transcript, setTranscript] = useState("");
+  const [recognitionError, setRecognitionError] = useState<string | null>(null);
+  const [recognitionAttempts, setRecognitionAttempts] = useState(0);
+  const maxRetryAttempts = 3;
 
   // Audio references for sending and receiving messages
   const sendMessageAudioRef = useRef(new Audio("/message-sent.mp3"));
@@ -126,36 +131,97 @@ const Chat = ({
       if (SpeechRecognitionAPI) {
         const recognitionInstance = new SpeechRecognitionAPI();
 
-        recognitionInstance.continuous = true;
+        recognitionInstance.continuous = false; // Changed to false to avoid issues with continuous recognition
         recognitionInstance.interimResults = true;
         recognitionInstance.lang = "en-US";
 
         recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
-          let finalTranscript = "";
+          setRecognitionError(null);
 
+          let finalText = "";
+          let interimText = "";
+
+          // Process all results
           for (let i = 0; i < event.results.length; i++) {
             const result = event.results[i];
-            const transcript = result[0].transcript;
+            const text = result[0].transcript;
 
             if (result.isFinal) {
-              finalTranscript += transcript;
+              finalText += text + " ";
             } else {
-              setMessage((prev) => transcript);
+              interimText += text;
             }
           }
 
-          if (finalTranscript) {
-            setMessage(finalTranscript);
+          // Use either final or interim text based on what's available
+          const currentText = finalText || interimText;
+          if (currentText.trim()) {
+            setMessage(currentText.trim());
+            setTranscript(currentText.trim());
+          }
+        };
+
+        recognitionInstance.onstart = () => {
+          console.log("Voice recognition started");
+          setRecognitionError(null);
+        };
+
+        recognitionInstance.onerror = (event: any) => {
+          const errorType = event.error;
+          console.error("Recognition error", event);
+          setRecognitionError(errorType);
+
+          // Automatic retry for network errors, with a limit
+          if (
+            errorType === "network" &&
+            recognitionAttempts < maxRetryAttempts
+          ) {
+            setRecognitionAttempts((prev) => prev + 1);
+            // Wait a bit before retrying
+            setTimeout(() => {
+              if (isRecording) {
+                try {
+                  recognitionInstance.stop();
+                } catch (e) {
+                  console.log("Error stopping before retry:", e);
+                }
+                setTimeout(() => {
+                  try {
+                    recognitionInstance.start();
+                    console.log("Retrying speech recognition...");
+                  } catch (e) {
+                    console.log("Error restarting:", e);
+                  }
+                }, 300);
+              }
+            }, 1000);
           }
         };
 
         recognitionInstance.onend = () => {
-          if (isRecording) {
-            recognitionInstance.start();
+          console.log("Voice recognition ended");
+
+          // If we're supposed to be recording and there was no error, restart
+          if (isRecording && !recognitionError) {
+            try {
+              // Add a small delay before restarting to avoid rapid start/stop cycles
+              setTimeout(() => {
+                recognitionInstance.start();
+                console.log("Restarting speech recognition");
+              }, 300);
+            } catch (e) {
+              console.error("Failed to restart recognition:", e);
+              setIsRecording(false);
+            }
+          } else if (recognitionError) {
+            // If we had an error, stop recording
+            setIsRecording(false);
           }
         };
 
         setRecognition(recognitionInstance);
+      } else {
+        console.error("Speech Recognition API not supported in this browser");
       }
     }
   }, []);
@@ -191,6 +257,25 @@ const Chat = ({
     return () => clearTimeout(timer);
   }, [messages]);
 
+  // Effect to monitor chatMode changes
+  useEffect(() => {
+    // When switching to VOICE mode, start recording if not already doing so
+    if (chatMode === "VOICE" && recognition && !isRecording && !disabled) {
+      startRecording();
+    }
+    // When switching away from VOICE mode, stop recording
+    else if (chatMode !== "VOICE" && recognition && isRecording) {
+      stopRecording(true); // true means send the message if there is one
+    }
+  }, [chatMode, recognition, disabled]);
+
+  // Reset recognition attempts when recording stops
+  useEffect(() => {
+    if (!isRecording) {
+      setRecognitionAttempts(0);
+    }
+  }, [isRecording]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
@@ -201,45 +286,79 @@ const Chat = ({
         .play()
         .catch((error) => console.log("Send tone error:", error));
       setMessage("");
+      setTranscript("");
     }
   };
 
-  const toggleRecording = () => {
+  const startRecording = () => {
     if (!recognition) return;
 
-    if (isRecording) {
-      // Stop recording
+    try {
+      recognition.start();
+      voiceStartAudioRef.current
+        .play()
+        .catch((error) => console.log("Voice start tone error:", error));
+      setIsRecording(true);
+      setRecognitionError(null);
+      console.log("Started recording");
+    } catch (error) {
+      console.error("Error starting recognition:", error);
+
+      // If already started, stop and restart
+      try {
+        recognition.stop();
+        setTimeout(() => {
+          try {
+            recognition.start();
+            setIsRecording(true);
+          } catch (innerError) {
+            console.error("Failed to restart recognition:", innerError);
+            setIsRecording(false);
+          }
+        }, 300);
+      } catch (stopError) {
+        console.error("Failed to stop recognition before restart:", stopError);
+        setIsRecording(false);
+      }
+    }
+  };
+
+  const stopRecording = (sendCurrentMessage = false) => {
+    if (!recognition) return;
+
+    try {
       recognition.stop();
       voiceEndAudioRef.current
         .play()
         .catch((error) => console.log("Voice end tone error:", error));
 
-      // Send the message if there's content
-      if (message.trim()) {
+      // If requested, send the current message
+      if (sendCurrentMessage && message.trim()) {
         setLoading(true);
         onSendMessage(message.trim());
         sendMessageAudioRef.current
           .play()
           .catch((error) => console.log("Send tone error:", error));
         setMessage("");
+        setTranscript("");
       }
-    } else {
-      // Start recording
-      recognition.start();
-      voiceStartAudioRef.current
-        .play()
-        .catch((error) => console.log("Voice start tone error:", error));
-    }
 
-    setIsRecording(!isRecording);
+      setIsRecording(false);
+      setRecognitionError(null);
+      console.log("Stopped recording");
+    } catch (error) {
+      console.error("Error stopping recognition:", error);
+      setIsRecording(false);
+    }
   };
 
-  // Auto-activate voice mode when chatMode is VOICE
-  useEffect(() => {
-    if (chatMode === "VOICE" && recognition && !isRecording && !disabled) {
-      toggleRecording();
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording(true);
+    } else {
+      startRecording();
     }
-  }, [chatMode, recognition, disabled]);
+  };
 
   const isVoice = chatMode === "VOICE";
 
@@ -313,12 +432,24 @@ const Chat = ({
               </div>
               <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-400 break-words">
-                  Listening...
+                  {recognitionError
+                    ? `Error: ${recognitionError}. ${
+                        recognitionAttempts < maxRetryAttempts
+                          ? "Retrying..."
+                          : "Please try again."
+                      }`
+                    : `Listening...${message ? `: "${message}"` : ""}`}
                 </p>
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-75"></div>
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-150"></div>
+                  {recognitionError ? (
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  ) : (
+                    <>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse delay-150"></div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -335,7 +466,7 @@ const Chat = ({
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              disabled={disabled}
+              disabled={disabled || (isVoice && isRecording)}
               placeholder={isRecording ? "Listening..." : "Just ask..."}
               className="flex-1 px-4 py-2 rounded-lg bg-transparent border border-navy-600/20 text-gray-400 placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-300"
             />
@@ -355,7 +486,7 @@ const Chat = ({
             ) : (
               <button
                 type="submit"
-                disabled={disabled || !message.trim() || isVoice}
+                disabled={disabled || !message.trim()}
                 className="p-2 rounded-lg bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-navy-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <IoSend size={20} />
