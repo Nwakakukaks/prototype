@@ -204,7 +204,7 @@ const Chat = ({
   if (isVoiceMode && !browserSupportsSpeechRecognition) {
     return (
       <div className="p-4 text-red-500 bg-red-100 rounded-lg">
-        Your browser doesn't support speech recognition. Please try a different browser like Chrome.
+        Your browser doesn&apos;t support speech recognition. Please try a different browser like Chrome.
       </div>
     );
   }
