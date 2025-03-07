@@ -6,7 +6,7 @@ import { getWallet } from "../utils/getWallet";
 
 export async function getEthBalance({ createdBy, characterId }: { createdBy: string, characterId: string }) {
     const wallet = await getWallet(createdBy, characterId);
-    const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
+    const provider = new ethers.JsonRpcProvider(process.env.ELECTRO_RPC_URL);
     const signer = new ethers.Wallet(wallet.privateKey, provider);
 
     const balance = await provider.getBalance(signer.address);

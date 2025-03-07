@@ -398,71 +398,7 @@ export const walletToolDescription = [
       },
     },
   },
-  {
-    toolSpec: {
-        name: "Create_Interface_Tool",
-        description:
-          "Creates a UI interface from design specifications, returning the code to be displayed in a code editor.",
-        inputSchema: {
-          json: {
-            type: "object",
-            properties: {
-              designSpec: {
-                type: "string",
-                description: "The design instructions from Pearl (primary color, secondary, pages, layout and responsiveness etc.).",
-              },
-              framework: {
-                type: "string",
-                description:
-                  "The frontend framework to use (Default to Next.js).",
-                default: "Next.js"
-              },
-              componentType: {
-                type: "string",
-                description: "The type of component to create.",
-                enum: ["Page"],
-                default: "Page"
-              },
-              styleFramework: {
-                type: "string",
-                description: "The CSS framework to use.",
-                default: "Tailwind"
-              },
-              responsive: {
-                type: "boolean",
-                description:
-                  "Whether the interface should be responsive.",
-                default: true
-              },
-              darkMode: {
-                type: "boolean",
-                description: "Whether to include dark mode support.",
-                default: false
-              },
-              createdBy: {
-                type: "string",
-                description: "The user performing the action (e.g., 'user_xxx').",
-              },
-              characterId: {
-                type: "string",
-                description:
-                  "The character that is performing the action. This will always be Qwen.",
-              },
-              sessionId: {
-                type: "string",
-                description: "Session ID for the current conversation.",
-              },
-            },
-            required: [
-              "designSpec",
-              "createdBy",
-              "characterId",
-              "sessionId",
-            ],
-          },
-        },
-      },
-  },
+ 
 ];
 
 export async function walletToolHandler(
@@ -549,7 +485,7 @@ export async function walletToolHandler(
           case "Deploy_Contract_Tool":
             result = await deployContract({
               sessionId: toolUse.input.sessionId,
-              network: toolUse.input.network || "base",
+              network: toolUse.input.network || "electronuem",
               createdBy: toolUse.input.createdBy,
               characterId: toolUse.input.characterId,
               tokenName: toolUse.input.tokenName,
@@ -611,10 +547,6 @@ export async function walletToolHandler(
               recipientAddress: toolUse.input.recipientAddress,
               amount: toolUse.input.amount,
             });
-            break;
-
-          case "Create_Interface_Tool":
-            result = await createInterface(toolUse.input);
             break;
 
           default:

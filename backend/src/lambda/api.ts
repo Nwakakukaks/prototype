@@ -27,7 +27,7 @@ interface InvokeModelPayload {
   connectionId: string;
   stage: string;
   domainName: string;
-  chatMode: 'RECURSIVE' | 'STANDARD';
+  chatMode: 'RECURSIVE' | 'STANDARD' | 'VOICE';
   sendersWalletAddress: string;
   createdBy: string;
   characterId: string;

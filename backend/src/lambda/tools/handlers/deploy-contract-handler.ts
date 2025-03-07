@@ -16,16 +16,16 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient, {
 
 export async function deployContract({ sessionId, createdBy, characterId, tokenName, tokenSymbol, totalSupply, network }: { sessionId: string, createdBy: string, characterId: string, tokenName: string, tokenSymbol: string, totalSupply: string, network: string }) {
     const wallet = await getWallet(createdBy, characterId);
-    const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
+    const provider = new ethers.JsonRpcProvider(process.env.ELECTRO_RPC_URL);
     const signer = new ethers.Wallet(wallet.privateKey, provider);
 
-    logConsole.info(`Wallet Address: ${signer.address}`)
-    logConsole.info(`Session ID: ${sessionId}`)
-    logConsole.info(`Created By: ${createdBy}`)
-    logConsole.info(`Character ID: ${characterId}`)
-    logConsole.info(`Token Name: ${tokenName}`)
-    logConsole.info(`Token Symbol: ${tokenSymbol}`)
-    logConsole.info(`Total Supply: ${totalSupply}`)
+    // logConsole.info(`Wallet Address: ${signer.address}`)
+    // logConsole.info(`Session ID: ${sessionId}`)
+    // logConsole.info(`Created By: ${createdBy}`)
+    // logConsole.info(`Character ID: ${characterId}`)
+    // logConsole.info(`Token Name: ${tokenName}`)
+    // logConsole.info(`Token Symbol: ${tokenSymbol}`)
+    // logConsole.info(`Total Supply: ${totalSupply}`)
 
     const balance = await provider.getBalance(signer.address);
     if (balance < ethers.parseEther("0.0001")) {
@@ -35,7 +35,7 @@ export async function deployContract({ sessionId, createdBy, characterId, tokenN
     // Ensure totalSupply is a bigint
     try {
         logConsole.info(`Calling deployToken for ${tokenName} - ${tokenSymbol} - ${totalSupply}`)
-        const provider = new ethers.JsonRpcProvider(network === "sonic" ? process.env.SONIC_RPC_URL : network === "electroeum" ? process.env.ELECTROEUM_RPC_URL : process.env.POLYGON_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(network === "electronuem" ? process.env.ELECTRO_RPC_URL : process.env.ELECTRO_RPC_URL);
         const signer = new ethers.Wallet(wallet.privateKey, provider);
 
         // Check signer eth balance

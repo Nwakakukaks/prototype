@@ -30,7 +30,7 @@ export class ProtoStack extends cdk.Stack {
     console.log("Environment variables:");
     console.log("CHAIN_ID:", process.env.CHAIN_ID);
     console.log("ANTHROPIC_API_KEY:", process.env.ANTHROPIC_API_KEY);
-    console.log("SONIC_RPC_URL:", process.env.SONIC_RPC_URL);
+    console.log("ELECTRO_RPC_URL:", process.env.ELECTRO_RPC_URL);
     console.log(
       "UNISWAP_V2_ROUTER_ADDRESS:",
       process.env.UNISWAP_V2_ROUTER_ADDRESS
@@ -63,7 +63,7 @@ export class ProtoStack extends cdk.Stack {
 
     const requiredEnvVars = [
       "CHAIN_ID",
-      "SONIC_RPC_URL",
+      "ELECTRO_RPC_URL",
       "UNISWAP_V2_ROUTER_ADDRESS",
       "STAGE",
       "EXPLORER_API_KEY",
@@ -130,7 +130,7 @@ export class ProtoStack extends cdk.Stack {
         ],
         allowOrigins: [
           "http://localhost:3000",
-          "https://versionone1.vercel.app",
+          "https://prototype1.vercel.app",
         ],
       },
       disableExecuteApiEndpoint: false,
@@ -173,7 +173,7 @@ export class ProtoStack extends cdk.Stack {
       WSS_TABLE_NAME: websocketTable.tableName,
 
       // RPC
-      SONIC_RPC_URL: process.env.SONIC_RPC_URL as string,
+      ELECTRO_RPC_URL: process.env.ELECTRO_RPC_URL as string,
       ELECTROEUM_RPC_URL: process.env.ELECTROEUM_RPC_URL as string,
       POLYGON_RPC_URL: process.env.POLYGON_RPC_URL as string,
 
@@ -194,7 +194,7 @@ export class ProtoStack extends cdk.Stack {
       READ_TWITTER_ACCESS_ACCESS_SECRET: process.env
         .READ_TWITTER_ACCESS_ACCESS_SECRET as string,
 
-      // SonicScan
+      // Explorer
       EXPLORER_API_KEY: process.env.EXPLORER_API_KEY as string,
 
       // Pinata

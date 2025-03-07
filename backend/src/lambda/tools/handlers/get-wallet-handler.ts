@@ -12,7 +12,7 @@ export async function getWalletData({ createdBy, characterId }: { createdBy: str
             };
         }
 
-        const provider = new ethers.JsonRpcProvider(process.env.SONIC_RPC_URL);
+        const provider = new ethers.JsonRpcProvider(process.env.ELECTRO_RPC_URL);
         const signer = new ethers.Wallet(wallet.privateKey, provider);
 
         return {

@@ -8,7 +8,7 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
 /**
  * Creates a new project idea listing in Supabase for PAD19.
- * Called by Risha after breaking down idea into an MVP.
+ * Called by Pearl after breaking down idea into an MVP.
  */
 export async function createPad19Listing(inputData: {
   name: string;

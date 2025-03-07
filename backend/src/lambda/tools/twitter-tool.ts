@@ -155,7 +155,8 @@ export const twitterToolDescription = [
             },
             logo: {
               type: "string",
-              description: "image url for the project. use the image created with the Create_Image_Tool",
+              description:
+                "image url for the project. use the image created with the Create_Image_Tool",
             },
             link: {
               type: "string",
@@ -205,7 +206,7 @@ export const twitterToolDescription = [
             characterId: {
               type: "string",
               description:
-                "The character that is performing the action. This will always be Risha.",
+                "The character that is performing the action. This will always be Pearl.",
             },
             sessionId: {
               type: "string",
@@ -226,6 +227,66 @@ export const twitterToolDescription = [
             "createdBy",
             "sessionId",
           ],
+        },
+      },
+    },
+  },
+  {
+    toolSpec: {
+      name: "Create_Interface_Tool",
+      description:
+        "Creates a UI interface from design specifications, returning the code to be displayed in a code editor.",
+      inputSchema: {
+        json: {
+          type: "object",
+          properties: {
+            designSpec: {
+              type: "string",
+              description:
+                "The design instructions from Pearl (primary color, secondary, pages, layout and responsiveness etc.).",
+            },
+            framework: {
+              type: "string",
+              description:
+                "The frontend framework to use (Default to Next.js).",
+              default: "Next.js",
+            },
+            componentType: {
+              type: "string",
+              description: "The type of component to create.",
+              enum: ["Page"],
+              default: "Page",
+            },
+            styleFramework: {
+              type: "string",
+              description: "The CSS framework to use.",
+              default: "Tailwind",
+            },
+            responsive: {
+              type: "boolean",
+              description: "Whether the interface should be responsive.",
+              default: true,
+            },
+            darkMode: {
+              type: "boolean",
+              description: "Whether to include dark mode support.",
+              default: false,
+            },
+            createdBy: {
+              type: "string",
+              description: "The user performing the action (e.g., 'user_xxx').",
+            },
+            characterId: {
+              type: "string",
+              description:
+                "The character that is performing the action. This will always be Qwen.",
+            },
+            sessionId: {
+              type: "string",
+              description: "Session ID for the current conversation.",
+            },
+          },
+          required: ["designSpec", "createdBy", "characterId", "sessionId"],
         },
       },
     },
@@ -295,10 +356,6 @@ export async function twitterToolHandler(
 
           case "Fetch_Tweets_Tool":
             result = await getTweets(toolUse.input.userHandle);
-            break;
-
-          case "Create_Pad19_Listing_Tool":
-            result = await createPad19Listing(toolUse.input);
             break;
 
           default:
