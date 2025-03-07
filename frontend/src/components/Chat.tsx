@@ -31,9 +31,9 @@ const characterColors: { [key: string]: string } = {
   Harper: "text-purple-600",
   Qwen: "text-amber-600",
   Monad: "text-rose-600",
-  Pearl: "text-blue-600",
+  Pearl: "text-orange-600",
   Risha: "text-yellow-600",
-  You: "text-blue-600",
+  You: "text-orange-600",
 };
 
 const Chat = ({
@@ -231,7 +231,7 @@ const Chat = ({
       <div className="flex flex-col h-full">
         <div className="p-4 border-b border-gray-200 cursor-pointer flex items-center gap-3 md:cursor-default h-14 shrink-0">
           <div className="flex-1 flex items-center justify-between">
-            <h2 className="font-semibold tracking-tight text-2xl text-blue-600 flex items-center gap-2">
+            <h2 className="font-semibold tracking-tight text-2xl text-orange-600 flex items-center gap-2">
               Chat History
             </h2>
             <CustomConnectButton />
@@ -265,7 +265,7 @@ const Chat = ({
           {loading && (
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm text-blue-600">
+                <span className="font-semibold text-sm text-orange-600">
                   System
                 </span>
               </div>

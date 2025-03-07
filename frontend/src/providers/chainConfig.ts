@@ -1,27 +1,26 @@
-import { defineChain } from 'viem'
+import { defineChain } from "viem";
 
 export const sonicTestnet = defineChain({
-  id: 57054,
-  name: 'Electronuem Testnet',
-  network: 'electronuem-testnet',
+  id: 52014,
+  name: "Electronuem Mainnet",
+  network: "electronuem-mainnet",
   nativeCurrency: {
     decimals: 18,
-    name: 'Electronuem Testnet',
-    symbol: 'S',
+    name: "Electronuem Mainnet",
+    symbol: "ETN",
   },
   rpcUrls: {
-    default: { 
-      http: ['https://rpc.blaze.soniclabs.com']
+    default: {
+      http: ["https://rpc.electroneum.com"],
     },
     public: {
-      http: ['https://rpc.blaze.soniclabs.com']
-    }
+      http: ["https://rpc.electroneum.com"],
+    },
   },
   blockExplorers: {
     default: {
-      name: 'Electronuem Explorer',
-      url: 'https://testnet.sonicscan.org'
-    }
+      name: "Electronuem Explorer",
+      url: "https://blockexplorer.electroneum.com",
+    },
   },
-  testnet: true
-})
+});

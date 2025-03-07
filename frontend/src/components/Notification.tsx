@@ -25,7 +25,7 @@ const Notification = ({
       case "funds_requested":
         return "bg-emerald-500 text-white";
       case "trade_executed":
-        return "bg-blue-500 text-white";
+        return "bg-orange-500 text-white";
       case "contract_deployed":
         return "bg-purple-500 text-white";
       case "wallet_created":
@@ -39,7 +39,7 @@ const Notification = ({
       case "image_created":
         return "bg-indigo-500 text-white";
       case "basename_managed":
-        return "bg-blue-700 text-white";
+        return "bg-orange-700 text-white";
       case "repo_created":
         return "bg-teal-500 text-white";
       case "vercel_deployment":
@@ -51,7 +51,7 @@ const Notification = ({
       case "research_completed":
         return "bg-black text-white";
       default:
-        return "bg-blue-600 text-white";
+        return "bg-orange-600 text-white";
     }
   };
 
@@ -65,7 +65,7 @@ const Notification = ({
       case "monad":
         return "text-rose-500";
       case "risha":
-        return "text-blue-500";
+        return "text-orange-500";
       case "pearl":
         return "text-pink-500";
       default:
@@ -83,7 +83,7 @@ const Notification = ({
       case "monad":
         return "bg-rose-50";
       case "risha":
-        return "bg-blue-50";
+        return "bg-orange-50";
       case "pearl":
         return "bg-pink-50";
       default:

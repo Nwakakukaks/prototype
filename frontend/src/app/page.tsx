@@ -34,7 +34,7 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
         className="w-12 h-12 rounded-full object-contain"
       />
       <div className="flex gap-2">
-        <a href="/pad19" className="text-gray-800 hover:text-blue-500">
+        <a href="/pad19" className="text-gray-800 hover:text-orange-500">
           <ExternalLink size={20} />
         </a>
       </div>
@@ -52,13 +52,13 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
 
     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
       <div className="flex items-center gap-1">
-        <Users size={16} className="text-blue-500" />
+        <Users size={16} className="text-orange-500" />
         <span className="text-sm font-medium text-gray-600">
           {startup.users}
         </span>
       </div>
       <div className="flex items-center gap-1">
-        <Star size={16} className="text-blue-500" />
+        <Star size={16} className="text-orange-500" />
         <span className="text-sm font-medium text-gray-600">
           {startup.stars}
         </span>
@@ -92,7 +92,7 @@ const StartupMarquee = ({ startups }: { startups: Startup[] }) => {
         <div className="flex gap-8 animate-scroll">
           {duplicatedStartups.map((startup, index) => (
             <div key={index} className="inline-flex items-center gap-3 px-4">
-              <span className="text-blue-500">•</span>
+              <span className="text-orange-500">•</span>
               <span className="text-gray-900 font-medium whitespace-nowrap">
                 {startup.name}
               </span>
@@ -160,7 +160,8 @@ const LandingPage: React.FC = () => {
     },
     {
       name: "DAO Factory",
-      description: "No-code platform for launching DAOs on Electronuem Blockchain",
+      description:
+        "No-code platform for launching DAOs on Electronuem Blockchain",
       logo: "https://jnoznbd6y3.ufs.sh/f/PKy8oE1GN2J3JlEaf6HVozIYU8DFRWmkp7SC4bh16KiGHZfv",
       requester: "0x2345...6789",
       users: "9.1k",
@@ -198,7 +199,7 @@ const LandingPage: React.FC = () => {
             <Button
               size={"lg"}
               onClick={handleClick}
-              className="rounded-full py-6 px-10 text-lg font-medium bg-blue-500 text-white hover:bg-blue-600 transition-colors relative pulse-button"
+              className="rounded-full py-6 px-10 text-lg font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors relative pulse-button"
             >
               Get Started
             </Button>
@@ -229,7 +230,7 @@ const LandingPage: React.FC = () => {
         <div>
           <hr className="border-t border-gray-400" />
           <div className="flex justify-between items-center px-14 text-sm text-gray-200 pb-10 pt-6 font-medium">
-            <p>&copy; 2025 vOne Inc.</p>
+            <p>&copy; 2025 protype Inc.</p>
             <p>
               Built with{" "}
               <span
@@ -239,7 +240,7 @@ const LandingPage: React.FC = () => {
               >
                 ❤️
               </span>{" "}
-              by VersionOne team
+              by Prototype.ai team
             </p>
             <div className="flex space-x-3">
               <a

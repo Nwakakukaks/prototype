@@ -72,7 +72,7 @@ const AgentProfileCard: React.FC<{
   >
     <CardContent className="p-4 flex items-center gap-4">
       <div className="relative w-24 h-24">
-        {/* <div className="absolute inset-0 rounded-full bg-blue-100"></div> */}
+        {/* <div className="absolute inset-0 rounded-full bg-orange-100"></div> */}
         <img
           src={agent.image}
           alt={agent.name}
@@ -81,7 +81,7 @@ const AgentProfileCard: React.FC<{
       </div>
       <div className="flex-1">
         <h3 className="font-semibold text-lg text-gray-100">{agent.name}</h3>
-        <p className="text-blue-600 text-sm font-medium mb-1">{agent.role}</p>
+        <p className="text-orange-600 text-sm font-medium mb-1">{agent.role}</p>
         <p className="text-gray-400 text-sm line-clamp-2">
           {agent.description}
         </p>

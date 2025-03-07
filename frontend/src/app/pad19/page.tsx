@@ -82,7 +82,7 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
         <Link2Icon size={16} className="text-gray-600" />
         {startup.status === "In Queue" ? (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-blue-600 underline">
+            <span className="text-sm text-orange-600 underline">
               awaiting deployment
             </span>
             <Loader2 size={16} className="animate-spin text-gray-600" />
@@ -92,7 +92,7 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
             target="_blank"
             rel="noopener noreferrer"
             href={startup.link}
-            className="text-sm text-blue-500 truncate font-medium underline min-w-0 cursor-pointer"
+            className="text-sm text-orange-500 truncate font-medium underline min-w-0 cursor-pointer"
           >
             {startup.link}
           </a>
@@ -123,13 +123,13 @@ const StartupCard: React.FC<StartupCardProps> = ({ startup }) => (
 
     <div className="flex items-center justify-between pt-4 px-4 border-t border-gray-100">
       <div className="flex items-center gap-1">
-        <Users size={16} className="text-blue-500" />
+        <Users size={16} className="text-orange-500" />
         <span className="text-sm font-medium text-gray-600">
           {startup.users}
         </span>
       </div>
       <div className="flex items-center gap-1">
-        <Star size={16} className="text-blue-500" />
+        <Star size={16} className="text-orange-500" />
         <span className="text-sm font-medium text-gray-600">
           {startup.stars}
         </span>

@@ -77,7 +77,7 @@ const NotificationBoard = ({ notifications }: NotificationBoardProps) => {
   return (
     <div className="w-full h-[60vh] flex flex-col p-4 overflow-y-auto">
       <h2
-        className={`font-semibold tracking-tight text-lg text-blue-600 mb-4 ${pixelify_sans.className}`}
+        className={`font-semibold tracking-tight text-lg text-orange-600 mb-4 ${pixelify_sans.className}`}
       >
         System Events
       </h2>

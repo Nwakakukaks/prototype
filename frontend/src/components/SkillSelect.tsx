@@ -22,13 +22,13 @@ type Skill = {
 
 const availableSkills: Skill[] = [
   { id: "grok", name: "Grok", color: "bg-red-700 hover:bg-red-800" },
-  { id: "twitter", name: "Twitter", color: "bg-blue-500 hover:bg-blue-600" },
+  { id: "twitter", name: "Twitter", color: "bg-orange-500 hover:bg-orange-600" },
   {
     id: "rainbowkit",
     name: "Rainbowkit",
     color: "bg-yellow-500 hover:bg-yellow-600",
   },
-  { id: "canva", name: "Canva", color: "bg-blue-700 hover:bg-blue-800" },
+  { id: "canva", name: "Canva", color: "bg-orange-700 hover:bg-orange-800" },
   {
     id: "defiant",
     name: "Defiant",
@@ -79,7 +79,7 @@ function DroppableArea({
   });
 
   const borderColor = isOver ? "border-blue-500" : "border-gray-300";
-  const bgColor = isOver ? "bg-blue-50" : "bg-transparent";
+  const bgColor = isOver ? "bg-orange-50" : "bg-transparent";
 
   return (
     <div

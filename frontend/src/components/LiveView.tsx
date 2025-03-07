@@ -130,12 +130,12 @@ const defaultCode = `export const MainPage = () => {
     return (
       <div className="bg-gray-100 min-h-screen p-8">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-blue-900 mb-8">Lending Dashboard</h2>
+          <h2 className="text-3xl font-bold text-orange-900 mb-8">Lending Dashboard</h2>
           
           <div className="grid grid-cols-3 gap-6">
             {/* Lending Section */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-blue-900 mb-4">Lend Assets</h3>
+              <h3 className="text-xl font-semibold text-orange-900 mb-4">Lend Assets</h3>
               <div className="space-y-4">
                 <select className="w-full p-2 border rounded-lg">
                   <option>Select Asset</option>
@@ -148,7 +148,7 @@ const defaultCode = `export const MainPage = () => {
                   placeholder="Enter Amount" 
                   className="w-full p-2 border rounded-lg"
                 />
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                <button className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700">
                   Supply Liquidity
                 </button>
               </div>
@@ -156,7 +156,7 @@ const defaultCode = `export const MainPage = () => {
   
             {/* Borrowing Section */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-blue-900 mb-4">Borrow Assets</h3>
+              <h3 className="text-xl font-semibold text-orange-900 mb-4">Borrow Assets</h3>
               <div className="space-y-4">
                 <select className="w-full p-2 border rounded-lg">
                   <option>Select Collateral</option>
@@ -171,7 +171,7 @@ const defaultCode = `export const MainPage = () => {
                 <div className="text-sm text-gray-600">
                   Collateralization Ratio: 150%
                 </div>
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                <button className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700">
                   Borrow Now
                 </button>
               </div>
@@ -179,7 +179,7 @@ const defaultCode = `export const MainPage = () => {
   
             {/* Portfolio Section */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-blue-900 mb-4">Your Portfolio</h3>
+              <h3 className="text-xl font-semibold text-orange-900 mb-4">Your Portfolio</h3>
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span>Total Supplied</span>
@@ -193,7 +193,7 @@ const defaultCode = `export const MainPage = () => {
                   <span>Current APY</span>
                   <span className="font-bold text-green-600">4.5%</span>
                 </div>
-                <button className="w-full bg-gray-200 text-blue-900 py-3 rounded-lg hover:bg-gray-300">
+                <button className="w-full bg-gray-200 text-orange-900 py-3 rounded-lg hover:bg-gray-300">
                   View Full Portfolio
                 </button>
               </div>
