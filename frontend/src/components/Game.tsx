@@ -38,7 +38,7 @@ const Game = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const [playerStates, setPlayerStates] = useState<PlayerState[]>([]);
   const [chatMode, setChatMode] = useState<"STANDARD" | "RECURSIVE" | "VOICE">(
-    "STANDARD"
+    "RECURSIVE"
   );
   const [notifications, setNotifications] = useState<any[]>([]);
   const [chatMessages, setChatMessages] = useState<
