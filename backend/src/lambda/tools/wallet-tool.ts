@@ -398,7 +398,6 @@ export const walletToolDescription = [
       },
     },
   },
- 
 ];
 
 export async function walletToolHandler(

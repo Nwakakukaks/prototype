@@ -7,6 +7,7 @@ import { createTweet } from "./handlers/create-tweet-handler";
 import { getGrokAnalysis } from "./handlers/get-grok-information-handler";
 import { getTweets } from "./handlers/get-tweets-handler";
 import { createPad19Listing } from "./handlers/create-pad19-listing";
+import createInterface from "./handlers/create-interface-handler";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
@@ -356,6 +357,14 @@ export async function twitterToolHandler(
 
           case "Fetch_Tweets_Tool":
             result = await getTweets(toolUse.input.userHandle);
+            break;
+
+          case "Create_Interface_Tool":
+            result = await createInterface(toolUse.input);
+            break;
+
+          case "Create_Pad19_Listing_Tool":
+            result = await createPad19Listing(toolUse.input);
             break;
 
           default:

@@ -63,7 +63,7 @@ const getModelId = (agentName: string) => {
 export default getModelId;
 
 const recursiveOptions = {
-  maxRecursions: 10,
+  maxRecursions: 12,
 };
 
 export interface InvokeModelPayload {
@@ -103,7 +103,7 @@ const pearlAgent = new BedrockLLMAgent({
 });
 pearlAgent.setSystemPrompt(INTERFACE_DESIGNER_PROMPT);
 
-// Jaden Agent
+// Jaden Agent (Defi Analyst)
 const jadenAgent = new BedrockLLMAgent({
   name: "Jaden",
   streaming: false,
@@ -202,7 +202,6 @@ orchestrator.addAgent(qwenAgent);
 orchestrator.addAgent(pearlAgent);
 orchestrator.addAgent(rishaAgent);
 
-// Let Risha be the default agent
 orchestrator.setDefaultAgent(rishaAgent);
 
 async function streamResponseToCharacter(
@@ -408,7 +407,7 @@ const handleMessage = async (
     }
 
     if (mode === "RECURSIVE" || mode === "VOICE") {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       return await handleMessage(
         sessionId,
         createdBy,

@@ -150,7 +150,7 @@ const Notification = ({
       case "repo_created":
         return `${metadata.github_repo}`;
       case "listed_on_pad19":
-        return `http://localhost:3000/pad19`; // change to deployment url
+        return `https://prototype-rho-ruddy.vercel.app/pad19`; // change to deployment url
       default:
         return null;
     }

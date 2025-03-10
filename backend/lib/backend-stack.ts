@@ -130,7 +130,7 @@ export class ProtoStack extends cdk.Stack {
         ],
         allowOrigins: [
           "http://localhost:3000",
-          "https://prototype1.vercel.app",
+          "https://prototype-rho-ruddy.vercel.app/",
         ],
       },
       disableExecuteApiEndpoint: false,

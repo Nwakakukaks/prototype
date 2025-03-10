@@ -1,3 +1,4 @@
+// handlers/create-notion-project-doc.ts
 import axios from "axios";
 import {
   logConsole,
@@ -10,7 +11,11 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
-interface NotionGithubInput {
+/**
+ * Creates a Notion page (PRD) with project details and milestones.
+ * Called by Risha when breaking down an idea into an MVP.
+ */
+export async function createNotionProjectDoc(inputData: {
   parentDatabaseId: string;
   title: string;
   description: string;
@@ -18,38 +23,55 @@ interface NotionGithubInput {
   createdBy: string;
   characterId: string;
   sessionId: string;
-}
-
-/**
- * Creates a Notion project document (PRD) and a GitHub repository for the project.
- */
-export async function createNotionProjectDoc(inputData: NotionGithubInput) {
+}) {
   try {
     await sendCharacterMessage(
       inputData.characterId,
       inputData.sessionId,
       docClient,
-      `Creating the project document on Notion, one second...`
+      `Creating the project document on notion, one second...`
     );
 
     const milestonesText = inputData.milestones
       .map((ms) => `• ${ms}`)
       .join("\n");
 
-    const notionPayload = {
+    const payload = {
       parent: { database_id: process.env.NOTION_DATABASE_ID },
       properties: {
-        Name: { title: [{ text: { content: inputData.title } }] },
-        Description: {
-          rich_text: [{ text: { content: inputData.description } }],
+        Name: {
+          title: [
+            {
+              text: {
+                content: inputData.title,
+              },
+            },
+          ],
         },
-        Milestones: { rich_text: [{ text: { content: milestonesText } }] },
+        Description: {
+          rich_text: [
+            {
+              text: {
+                content: inputData.description,
+              },
+            },
+          ],
+        },
+        Milestones: {
+          rich_text: [
+            {
+              text: {
+                content: milestonesText,
+              },
+            },
+          ],
+        },
       },
     };
 
-    const notionResponse = await axios.post(
+    const response = await axios.post(
       "https://api.notion.com/v1/pages",
-      notionPayload,
+      payload,
       {
         headers: {
           Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
@@ -59,62 +81,26 @@ export async function createNotionProjectDoc(inputData: NotionGithubInput) {
       }
     );
 
-    logConsole.info(`Notion page created: ${notionResponse.data.id}`);
-    const notionUrl = notionResponse.data.url;
+    logConsole.info(`Notion page created: ${response.data.id}`);
 
     await sendGodMessage(inputData.sessionId, docClient, {
       createdBy: inputData.createdBy,
       characterId: inputData.characterId,
       createdAt: new Date().toISOString(),
       eventName: "prd_created",
-      metadata: { Notion_doc: notionUrl },
-    });
-
-    await sendCharacterMessage(
-      inputData.characterId,
-      inputData.sessionId,
-      docClient,
-      `Creating GitHub repository for project, one second...`
-    );
-
-    const githubPayload = {
-      name: inputData.title,
-      description: inputData.description,
-      private: false,
-      auto_init: true,
-    };
-
-    const githubResponse = await axios.post(
-      "https://api.github.com/user/repos",
-      githubPayload,
-      {
-        headers: {
-          Authorization: `token ${process.env.GITHUB_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    logConsole.info(`GitHub repo created: ${githubResponse.data.full_name}`);
-    const repoUrl = githubResponse.data.html_url;
-
-    await sendGodMessage(inputData.sessionId, docClient, {
-      createdBy: inputData.createdBy,
-      characterId: inputData.characterId,
-      createdAt: new Date().toISOString(),
-      eventName: "repo_created",
-      metadata: { github_repo: repoUrl },
+      metadata: {
+        Notion_doc: response.data.url,
+      },
     });
 
     return {
-      message: "Notion PRD and GitHub repository created successfully",
-      notionUrl,
-      repoUrl,
+      message: "Notion project document created successfully",
+      pageUrl: response.data.url || null,
     };
   } catch (error: any) {
-    logConsole.error("Error creating Notion PRD or GitHub repo:", error);
+    logConsole.error("Error creating Notion project document:", error);
     return {
-      error: error.name || "NotionGithubCreationError",
+      error: error.name || "NotionCreationError",
       message: error.message,
     };
   }

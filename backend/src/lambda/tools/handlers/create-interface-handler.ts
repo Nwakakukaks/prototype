@@ -141,14 +141,7 @@ Ensure your generated code follows this format exactly. Do not include any comme
     }
 
     // Format the code result
-    const codeResult: InterfaceCode = {
-      fileName: "Page.tsx",
-      language: "typescript",
-      content: generatedCode,
-      framework: inputData.framework || "Next.js",
-      styleFramework: inputData.styleFramework || "TailwindCSS",
-      componentType: inputData.componentType || "Page",
-    };
+    const codeResult = generatedCode;
 
     await sendGodMessage(inputData.sessionId, docClient, {
       createdBy: inputData.createdBy,
